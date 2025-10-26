@@ -9,15 +9,23 @@ BuiidRepo = ()=>{
     // console.log(process.env.REPO_ID);
     // console.log("end");
 
-    if(!(process.env.GITHUB_REPOSITORY_URL)){
+    const github_repository_url = process.env.GITHUB_REPOSITORY_URL;
+    const repo_id = process.env.REPO_ID;
+
+    if(!(github_repository_url)){
         console.log("GITHUB_REPOSITORY_URL not provided");
         return new Error("GITHUB_REPOSITORY_URL not provided")
     }
 
-    if(!(process.env.REPO_ID)){
+    if(!(repo_id)){
         console.log("REPO_ID not provided");
         return new Error("REPO_ID not provided")
     }
+
+    const clone = exec(`git clone ${github_repository_url}`);
+
+    console.log("cloning.....");
+
 
     
     
