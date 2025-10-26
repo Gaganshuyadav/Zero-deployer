@@ -35,8 +35,6 @@ BuiidRepo = ()=>{
 
         const pkgPath = path.join(targetPath,"package.json");
 
-        console.log(pkgPath);
-
         // if path exist for build Script
         if(fs.existsSync(pkgPath)){
 
@@ -46,6 +44,12 @@ BuiidRepo = ()=>{
 
             if(hasBuildScript){
                 console.log("contains build script");
+
+                const buildRepo = exec(`echo "[INSTALL]" && npm install --prefix ${targetPath} && echo "[BUILD]" && npm run build --prefix ${targetPath}`);
+                buildRepo.on("close",()=>{
+                    console.log("build successful");
+                })
+
             }
             else{
                 console.log("contains package.json but missing `build` script");
