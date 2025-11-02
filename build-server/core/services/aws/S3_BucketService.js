@@ -18,7 +18,7 @@ exports.uploadFileToS3 = ( fileNameKey, filePath) =>{
     const uploadParams = {
         Bucket: process.env.AWS_BUCKET,
         Body: fileContent,
-        key: fileNameKey,
+        Key: fileNameKey,
         ContentType: mime.lookup(filePath)
     }
 

@@ -6,22 +6,12 @@ const { getAllFilesPathFromFolder } = require("./core/custom_funcs/getAllFilesPa
 const { uploadAllFilesToS3 } = require("./core/custom_funcs/uploadAllBuildFilesToS3");
 
 BuiidRepo = ()=>{
-    // console.log("I Am Ironman");
-    // console.log(process.env.GITHUB_REPOSITORY_URL);
-    // console.log(process.env.REPO_ID);
-    // console.log("end");
 
-    // const folderPathForRepoClone = path.join(__dirname,`./cloned-repo/123`); 
-
-    // const allFilesPathsFromBuild = getAllFilesPathFromFolder(folderPathForRepoClone, false);
-    // uploadAllFilesToS3( allFilesPathsFromBuild, 123, false);
-
-    // return;
-
+    //env checker
     ensureEnv(["GITHUB_REPOSITORY_URL","REPO_ID","AWS_ACCESS_KEY","AWS_SECRET_KEY","AWS_REGION","AWS_BUCKET"]);
 
-    const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git";
-    const repo_id = process.env.REPO_ID || `${(Math.floor(Math.random()*10000))}`;
+    const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git" || "https://github.com/prashantbuilds/macbook-air-m2-landing-page.git";
+    const repo_id = process.env.REPO_ID || 12345 || `${(Math.floor(Math.random()*10000))}`;
 
     const folderPathForRepoClone = path.join(__dirname,`./cloned-repo/${repo_id}`); 
     const repoName = github_repository_url.split("/")[github_repository_url.split("/").length-1].toString().split(".")[0];
@@ -47,15 +37,22 @@ BuiidRepo = ()=>{
             if(hasBuildScript){
                 console.log("contains build script");
 
-                const buildRepo = exec(`echo "[INSTALL]" && npm install --prefix ${targetPath} && echo "[BUILD]" && npm run build --prefix ${targetPath}`);
-                buildRepo.on("close",async ()=>{
+                console.log("npm install ...");
+                const node_modules_install = exec(`npm install --prefix ${targetPath}`);
+                node_modules_install.on("close",async ()=>{
 
-                    console.log("build successful");
+                    console.log("Build start... ");
 
-                    console.log("Starting Upload Files to S3...");
-                    const allFilesPathsFromBuildFolder = getAllFilesPathFromFolder( `${targetPath}build`, true);
-                    await uploadAllFilesToS3( allFilesPathsFromBuildFolder, repo_id, true);
-                    console.log("All Build Files Uploaded Successfully");
+                    const makeBuild = exec(`npm run build --prefix ${targetPath}`);
+                    makeBuild.on("close", async ()=>{
+
+                        console.log("build successful");
+
+                        console.log("Starting Upload Files to S3...");
+                        const allFilesPathsFromBuildFolder = getAllFilesPathFromFolder( `${targetPath}build`, true);
+                        await uploadAllFilesToS3( allFilesPathsFromBuildFolder, repo_id, true);
+                        console.log("All Build Files Uploaded Successfully");
+                    })
 
                 })
 
