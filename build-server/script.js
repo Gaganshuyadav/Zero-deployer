@@ -8,7 +8,14 @@ const { uploadAllFilesToS3 } = require("./core/custom_funcs/uploadAllBuildFilesT
 BuiidRepo = ()=>{
 
     //env checker
-    ensureEnv(["GITHUB_REPOSITORY_URL","REPO_ID","AWS_ACCESS_KEY","AWS_SECRET_KEY","AWS_REGION","AWS_BUCKET"]);
+    ensureEnv([
+        "GITHUB_REPOSITORY_URL",
+        "REPO_ID",
+        "AWS_ACCESS_KEY",
+        "AWS_SECRET_KEY",
+        "AWS_REGION",
+        "AWS_BUCKET"
+    ]);
 
     const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git" || "https://github.com/prashantbuilds/macbook-air-m2-landing-page.git";
     const repo_id = process.env.REPO_ID || 12345 || `${(Math.floor(Math.random()*10000))}`;
