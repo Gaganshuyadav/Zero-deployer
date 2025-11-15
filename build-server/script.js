@@ -5,7 +5,11 @@ const { ensureEnv } = require("./core/utils/envChecker");
 const { getAllFilesPathFromFolder } = require("./core/custom_funcs/getAllFilesPath");
 const { uploadAllFilesToS3 } = require("./core/custom_funcs/uploadAllBuildFilesToS3");
 
-BuiidRepo = ()=>{
+BuiidRepo = async ()=>{
+
+    if (process.env.AWS_SECRET_MANAGER_EXIST === "1") {
+        await loadSecrets();
+    }
 
     //env checker
     ensureEnv([

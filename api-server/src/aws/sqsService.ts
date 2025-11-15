@@ -11,7 +11,7 @@ const sqsClient = new SQS({
 });
 
 //producer
-export const sendMessage = async( message:object)=>{
+export const sendMessage = async( message:{ repoId:string, githubUrl:string})=>{
 
     const sendParams = {
         QueueUrl: process.env.AWS_QUEUE_URL,
@@ -21,6 +21,7 @@ export const sendMessage = async( message:object)=>{
     const sendCommand = new SendMessageCommand(sendParams);
     const response = await sqsClient.send(sendCommand);
     console.log("Message sent, ID: ",response.MessageId);
+    console.log("Repo Id: ", message.repoId);
 }
 
 
@@ -37,10 +38,11 @@ export const pollChecker = async ( pollTime:number=5000)=>{
         }
 
         const runningTaskCount = await ecsService.getRunningTaskCount( process.env.AWS_ECS_BUILD_CLUSTER_NAME as string);
+        const maxRunningTask= Number(process.env.ECS_MAX_RUNNING_TASK_COUNT) || 200;
 
         // if already at or above limit -> skip polling
-        if( runningTaskCount >= 200){
-            console.log("Max Concurrency reached. Skipping new messages");
+        if( runningTaskCount >= maxRunningTask){
+            console.log("Max Concurrency reached. Stop Receiving Messages");
             return;
         }
 

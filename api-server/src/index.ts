@@ -4,9 +4,15 @@ import cors from "cors";
 import { ensureEnv} from "./utils/envChecker.js"
 import { generateRandomId } from './utils/generate-functions.js';
 import { sendMessage } from './aws/sqsService.js';
+import { loadSecrets } from './aws/secretManagerService.js';
 
 dotenv.config();
 
+const start = async () => {
+
+  if (process.env.AWS_SECRET_MANAGER_EXIST === "1") {
+    await loadSecrets();
+  }
 
 //env checker
 ensureEnv([
@@ -15,15 +21,14 @@ ensureEnv([
   "AWS_REGION", 
   "AWS_QUEUE_URL",
   "AWS_BUCKET",
-
   "AWS_ECS_BUILD_CLUSTER_NAME",
-  // "AWS_ECS_BUILD_TASK_DEFINITION_NAME",
-  // "AWS_ECS_LAUNCH_TYPE",
-  // "AWS_ECS_BUILD_ASSIGN_PUBLIC_IP",
-  // "AWS_ECS_BUILD_SUBNETS_LIST",
-  // "AWS_ECS_SECURITY_GROUPS_LIST",
-  // "AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME",
-  
+  "AWS_ECS_BUILD_TASK_DEFINITION_NAME",
+  "AWS_ECS_LAUNCH_TYPE",
+  "AWS_ECS_BUILD_ASSIGN_PUBLIC_IP",
+  "AWS_ECS_BUILD_SUBNETS_LIST",
+  "AWS_ECS_SECURITY_GROUPS_LIST",
+  "AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME",
+  "ECS_MAX_RUNNING_TASK_COUNT"
 ]);
 
 const app = express();
@@ -44,7 +49,7 @@ app.put("/deploy", ( req, res)=>{
 
   const repoId = generateRandomId(12);
 
-  sendMessage({ myMessage:"Hello from Queue!!"});
+  sendMessage({ repoId, githubUrl});
 
   res.json({
     message:"message send successfully"
@@ -62,3 +67,10 @@ app.get('/health', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
+}
+
+start().catch(err =>{
+  console.log('Startup error:',err);
+  process.exit(1);
+})

@@ -1,10 +1,10 @@
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 
 const client = new SecretsManagerClient({ 
-    region: process.env.AWS_REGION,
+    region: process.env.AWS_REGION as string,
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY ,
-        secretAccessKey: process.env.AWS_SECRET_KEY
+        accessKeyId: process.env.AWS_ACCESS_KEY as string,
+        secretAccessKey: process.env.AWS_SECRET_KEY as string
     }
 });
 
@@ -16,7 +16,7 @@ export const loadSecrets = async ()=>{
     const command = new GetSecretValueCommand({ SecretId: process.env.AWS_SECRET_MANAGER_SECRET_NAME});
     
     const res = await client.send(command);
-    const awsSecrets = JSON.parse(res.SecretString);
+    const awsSecrets:Record<string,any> = JSON.parse(res.SecretString as string);
     const secretsList = Object.entries(awsSecrets);   
     for( let [ key, value] of secretsList){
       process.env[key] = value;
