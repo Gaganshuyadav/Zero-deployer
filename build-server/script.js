@@ -54,6 +54,11 @@ BuiidRepo = async ()=>{
 
                     console.log("Build start... ");
 
+                    // change homepage path , to serve builds
+                    pkg.homepage = ".";
+                    fs.writeFileSync( pkgPath, JSON.stringify(pkg,null,2)+"\n");
+
+
                     const makeBuild = exec(`npm run build --prefix ${targetPath}`);
                     makeBuild.on("close", async ()=>{
 
