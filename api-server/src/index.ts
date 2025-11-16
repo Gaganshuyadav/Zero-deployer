@@ -3,15 +3,15 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { ensureEnv} from "./utils/envChecker.js"
 import { generateRandomId } from './utils/generate-functions.js';
-import { sendMessage } from './aws/sqsService.js';
-import { loadSecrets } from './aws/secretManagerService.js';
+import { sqsService } from './aws/sqsService.js';
+import { secretManagerService } from './aws/secretManagerService.js';
 
 dotenv.config();
 
 const start = async () => {
 
   if (process.env.AWS_SECRET_MANAGER_EXIST === "1") {
-    await loadSecrets();
+    await secretManagerService.loadSecrets();
   }
 
 //env checker
@@ -34,6 +34,9 @@ ensureEnv([
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+//run poll checker function
+sqsService.ReceiveMessagePollChecker(15000);
 const port = process.env.PORT || 3020;
 
 app.get('/', (req, res) => {
@@ -49,12 +52,12 @@ app.put("/deploy", ( req, res)=>{
 
   const repoId = generateRandomId(12);
 
-  sendMessage({ repoId, githubUrl});
+  // sqs receive messages to run ECS FARGATE Task
+  sqsService.sendMessage({ repoId, githubUrl});
 
   res.json({
     message:"message send successfully"
   })
-
 
 
 })

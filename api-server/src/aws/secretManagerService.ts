@@ -8,18 +8,24 @@ const client = new SecretsManagerClient({
     }
 });
 
-export const loadSecrets = async ()=>{
+class SecretManager_Service{
 
-    if( !process.env.AWS_REGION || !process.env.AWS_SECRET_MANAGER_SECRET_NAME){ throw new Error("Error Occurs in Secret Manager Initialization") };
+    public async loadSecrets(){
+        
+        if( !process.env.AWS_REGION || !process.env.AWS_SECRET_MANAGER_SECRET_NAME){ throw new Error("Error Occurs in Secret Manager Initialization") };
 
-    console.log("Loading AWS secrets...");
-    const command = new GetSecretValueCommand({ SecretId: process.env.AWS_SECRET_MANAGER_SECRET_NAME});
-    
-    const res = await client.send(command);
-    const awsSecrets:Record<string,any> = JSON.parse(res.SecretString as string);
-    const secretsList = Object.entries(awsSecrets);   
-    for( let [ key, value] of secretsList){
-      process.env[key] = value;
-    }  
-
+        console.log("Loading AWS secrets...");
+        const command = new GetSecretValueCommand({ SecretId: process.env.AWS_SECRET_MANAGER_SECRET_NAME});
+        
+        const res = await client.send(command);
+        const awsSecrets:Record<string,any> = JSON.parse(res.SecretString as string);
+        const secretsList = Object.entries(awsSecrets);   
+        for( let [ key, value] of secretsList){
+          process.env[key] = value;
+        } 
+    }
 }
+
+const secretManagerService = new SecretManager_Service();
+
+export { secretManagerService};

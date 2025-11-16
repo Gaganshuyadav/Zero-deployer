@@ -12,9 +12,9 @@ class ECS_Service{
 
     public async runSingleNewTask( taskParams:RunTaskCommandInput){
 
-    const command = new RunTaskCommand(taskParams);
-    const ecsResponse  = await ecsClient.send(command);
-    return ecsResponse;
+        const command = new RunTaskCommand(taskParams);
+        const ecsResponse  = await ecsClient.send(command);
+        return ecsResponse;
 
     }
 
