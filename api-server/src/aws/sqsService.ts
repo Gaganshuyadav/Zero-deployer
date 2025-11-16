@@ -1,4 +1,4 @@
-import { DeleteMessageCommand, ReceiveMessageCommand, SendMessageCommand, SQS, type ReceiveMessageCommandOutput} from "@aws-sdk/client-sqs";
+import { DeleteMessageCommand, GetQueueAttributesCommand, ReceiveMessageCommand, SendMessageCommand, SQS, type ReceiveMessageCommandOutput} from "@aws-sdk/client-sqs";
 import { ecsService } from "./ecsService.js";
 import type { AssignPublicIp, AwsVpcConfiguration, LaunchType } from "@aws-sdk/client-ecs";
 
@@ -32,24 +32,32 @@ export const pollChecker = async ( pollTime:number=5000)=>{
 
     setTimeout( async ()=>{
 
-        const receiveParams = {
-            QueueUrl: process.env.AWS_QUEUE_URL,
-            MaxNumberOfMessages: 2
-        }
-
         const runningTaskCount = await ecsService.getRunningTaskCount( process.env.AWS_ECS_BUILD_CLUSTER_NAME as string);
         const maxRunningTask= Number(process.env.ECS_MAX_RUNNING_TASK_COUNT) || 200;
+        const queueDepth = await getCurrentApproxTotalMessagesFromQueue( process.env.AWS_QUEUE_URL as string);
+
+        const availableSlots = Math.max( 0, maxRunningTask - runningTaskCount);
+        const tasksToStart = Math.min( queueDepth, availableSlots);
 
         // if already at or above limit -> skip polling
-        if( runningTaskCount >= maxRunningTask){
+        if( tasksToStart===0){
             console.log("Max Concurrency reached. Stop Receiving Messages");
             return;
         }
 
+
+        // Queue Params ( Receive and process that many messages)
+        const receiveQueueParams = {
+            QueueUrl: process.env.AWS_QUEUE_URL,
+            MaxNumberOfMessages: Math.min( tasksToStart, 10),
+            WaitTimeSeconds: 0
+        }
+
+
         // safe to poll messages from SQS
         try{
             console.log("Receiving Messages... ");
-            const receiveCommand = new ReceiveMessageCommand(receiveParams);
+            const receiveCommand = new ReceiveMessageCommand(receiveQueueParams);
             const sqsReceiveData:ReceiveMessageCommandOutput = await sqsClient.send(receiveCommand);
             console.log("SQS Received Data: ",sqsReceiveData?.Messages ? sqsReceiveData?.Messages?.length : 0 );
 
@@ -123,4 +131,16 @@ export const deleteMessage = async ( ReceiptHandle:string)=>{
 
     await sqsClient.send(deleteCommand);
     console.log("Message deleted from queue successfully")
+}
+
+// get count of (current messages in queue) 
+export const getCurrentApproxTotalMessagesFromQueue = async ( queueUrl:string):Promise<number> =>{
+
+    const command = new GetQueueAttributesCommand({
+        QueueUrl: queueUrl,
+        AttributeNames: ["ApproximateNumberOfMessages"]
+    })
+
+    const res = await sqsClient.send(command);
+    return Number(res.Attributes?.ApproximateNumberOfMessages) || 0;
 }
