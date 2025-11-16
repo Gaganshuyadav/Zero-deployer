@@ -55,9 +55,13 @@ app.put("/deploy", ( req, res)=>{
   // sqs receive messages to run ECS FARGATE Task
   sqsService.sendMessage({ repoId, githubUrl});
 
-  res.json({
-    message:"message send successfully"
-  })
+  return res.json({ 
+    status: 'queued', 
+    data: { 
+      repoId, 
+      url: `https://deployer/all-proj-builds/${repoId}/index.html` 
+    }
+  });
 
 
 })

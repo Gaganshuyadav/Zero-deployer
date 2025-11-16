@@ -1,6 +1,7 @@
 import { DeleteMessageCommand, GetQueueAttributesCommand, ReceiveMessageCommand, SendMessageCommand, SQS, type ReceiveMessageCommandOutput} from "@aws-sdk/client-sqs";
 import { ecsService } from "./ecsService.js";
 import type { AssignPublicIp, AwsVpcConfiguration, LaunchType } from "@aws-sdk/client-ecs";
+import type { SqsDeployMessage } from "../types/interfaces/message.js";
 
 const sqsClient = new SQS({
     region: process.env.AWS_REGION as string,
@@ -23,6 +24,8 @@ class SQS_Service{
         const sendCommand = new SendMessageCommand(sendParams);
         const response = await sqsClient.send(sendCommand);
         console.log("Message sent, ID: ",response.MessageId);
+
+        //only for message that contains repoid and github 
         console.log("Repo Id: ", message?.repoId ? message.repoId : " ");
     }
 
@@ -31,7 +34,7 @@ class SQS_Service{
 
         console.log(" Polling checker started... ");
 
-        setTimeout( async ()=>{
+        setInterval( async ()=>{
     
             const runningTaskCount = await ecsService.getRunningTaskCount( process.env.AWS_ECS_BUILD_CLUSTER_NAME as string);
             const maxRunningTask= Number(process.env.ECS_MAX_RUNNING_TASK_COUNT) || 200;
@@ -42,7 +45,8 @@ class SQS_Service{
     
             // if already at or above limit -> skip polling
             if( tasksToStart===0){
-                console.log("Max Concurrency reached. Stop Receiving Messages");
+                if(runningTaskCount>0){ console.log("Max Concurrency reached. Stop Receiving Messages"); }
+                else{ console.log("Currently Queue is Empty. Stop Receiving Messages"); }
                 return;
             }
     
@@ -66,7 +70,14 @@ class SQS_Service{
                     for(let i=0; i<sqsReceiveData?.Messages?.length; i++){
     
                         if( sqsReceiveData.Messages[i]?.Body){
-                            console.log("this is received message", JSON.parse(sqsReceiveData.Messages[i]?.Body as string));
+
+                            const receivedMessage:SqsDeployMessage = JSON.parse(sqsReceiveData.Messages[i]?.Body as string);
+                            console.log("this is received message", receivedMessage );
+
+                            if( !receivedMessage.repoId || !receivedMessage.githubUrl){
+                                console.log("Either repoId or githubUrl not provided in message body");
+                                return;
+                            }
     
                             // ECS task
                             const ecsResponse = await ecsService.runSingleNewTask({
@@ -83,10 +94,10 @@ class SQS_Service{
                                 overrides: {
                                     containerOverrides: [
                                         {
-                                            name: process.env.REPO_ID,
+                                            name: process.env.AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME,
                                             environment: [
-                                                { name: "GITHUB_REPOSITORY_URL", value: process.env.GITHUB_REPOSITORY_URL },
-                                                { name: "REPO_ID", value: process.env.REPO_ID},
+                                                { name: "GITHUB_REPOSITORY_URL", value: receivedMessage.githubUrl },
+                                                { name: "REPO_ID", value: receivedMessage.repoId },
                                                 { name: "AWS_ACCESS_KEY", value: process.env.AWS_ACCESS_KEY },
                                                 { name: "AWS_SECRET_KEY", value: process.env.AWS_SECRET_KEY },
                                                 { name: "AWS_REGION", value: process.env.AWS_REGION },
