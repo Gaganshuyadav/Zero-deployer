@@ -87,7 +87,7 @@ class SQS_Service{
                                 networkConfiguration: {
                                     awsvpcConfiguration: {
                                         assignPublicIp: process.env.AWS_ECS_BUILD_ASSIGN_PUBLIC_IP as AssignPublicIp,
-                                        subnets: JSON.parse(process.env.AWS_ECS_SECURITY_GROUPS_LIST || '[]') as Array<string>,
+                                        subnets: JSON.parse(process.env.AWS_ECS_BUILD_SUBNETS_LIST || '[]') as Array<string>,
                                         securityGroups: JSON.parse(process.env.AWS_ECS_SECURITY_GROUPS_LIST || '[]') as Array<string>
                                     }
                                 },
