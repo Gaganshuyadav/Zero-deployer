@@ -18,16 +18,22 @@
     "@aws-sdk/client-ecs": "^3.922.0",
     "@aws-sdk/client-secrets-manager": "^3.932.0",
     "@aws-sdk/client-sqs": "^3.922.0",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^6.19.0",
     "@types/cors": "^2.8.19",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "pg": "^8.16.3",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/node": "^24.8.1",
+    "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
     "concurrently": "^9.2.1",
+    "prisma": "^6.19.0",
     "typescript": "^5.9.3"
   }
 }

@@ -68,6 +68,8 @@ BuiidRepo = async ()=>{
                         const allFilesPathsFromBuildFolder = getAllFilesPathFromFolder( `${targetPath}build`, true);
                         await uploadAllFilesToS3( allFilesPathsFromBuildFolder, repo_id, true);
                         console.log("All Build Files Uploaded Successfully");
+                        console.log("Destroy Container");
+                        process.exit(0);
                     })
 
                 })
@@ -84,6 +86,9 @@ BuiidRepo = async ()=>{
                 const allFilesPathsFromFolder = getAllFilesPathFromFolder( `${targetPath}`, false);
                 await uploadAllFilesToS3( allFilesPathsFromFolder, repo_id, false);
                 console.log("All Files Uploaded Successfully");
+                
+                console.log("Destroy Container");
+                process.exit(0);
         }
 
     })

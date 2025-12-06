@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  firstName String @db.VarChar(100)
+  lastName String @db.VarChat(100)
+  email String @unique
+  password String
+  project Project[]
+}
+
+model Project {
+  id String @id @default(uuid())
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+  name String
+  createdBy String
+  gitUrl String @map("git_url")
+  subDomain String @map("sub_domain")
+  customDomain String @map("custom_domain")
+  deployment Deployment[] 
+  createdAt DateTime @map("created_at") @default(now())
+  updatedAt DateTime @map("updated_at") @updatedAt
+}
+
+model Deployment {
+  id String @id @default(uuid())
+  project Project @relation( fields: [project_id], references: [id], onDelete: Cascade)
+  project_id String
+  status DeploymentStatus
+  createdAt DateTime @map("created_at") @default(now())
+  updatedAt DateTime @map("updated_at") @updatedAt
+}
+
+
+
+//enums:-
+
+enum DeploymentStatus {
+  IN_ACTIVE
+  QUEUED
+  IN_PROGRESS
+  DEPLOYED
+  FAILED
+  PAUSED
+  STOPPED
+}
