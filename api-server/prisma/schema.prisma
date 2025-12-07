@@ -28,7 +28,7 @@ model Project {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String
   name String
-  createdBy String
+  createdBy String @map("created-by")
   gitUrl String @map("git_url")
   subDomain String @map("sub_domain")
   customDomain String @map("custom_domain")
