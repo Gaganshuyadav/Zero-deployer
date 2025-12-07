@@ -16,8 +16,8 @@ datasource db {
 
 model User {
   id String @id @default(uuid())
-  firstName String @db.VarChar(100)
-  lastName String @db.VarChat(100)
+  firstName String @db.VarChar(100) @map("first_name")
+  lastName String @db.VarChat(100) @map("last_name")
   email String @unique
   password String
   project Project[]
@@ -28,7 +28,7 @@ model Project {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String
   name String
-  createdBy String @map("created-by")
+  createdBy String @map("created_by")
   gitUrl String @map("git_url")
   subDomain String @map("sub_domain")
   customDomain String @map("custom_domain")
