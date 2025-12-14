@@ -1,15 +1,21 @@
 import { kafkaClient } from "../config/client.kafka.js"; 
 
 
-async function kafkaProducer( message:any){
+async function kafkaProducer( { topic, partition, key, message }:{ topic: string, partition:number, key:string, message:any}){
 
     const producer = kafkaClient.producer();
 
     await producer.connect();
 
     await producer.send({
-        topic: "avengers-current-location-updates",
-        messages: message
+        topic,
+        messages: [
+            {
+                partition,
+                key,
+                value: JSON.stringify(message)
+            }
+        ]
     })
 
 }
