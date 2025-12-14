@@ -37,4 +37,4 @@ async function kafkaConsumer( { topics}:{ topics:string[]}){
     })
 }
 
-
+export { kafkaConsumer};
