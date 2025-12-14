@@ -2,12 +2,13 @@ import { DeleteMessageCommand, GetQueueAttributesCommand, ReceiveMessageCommand,
 import { ecsService } from "./ecsService.js";
 import type { AssignPublicIp, AwsVpcConfiguration, LaunchType } from "@aws-sdk/client-ecs";
 import type { SqsDeployMessage } from "../types/interfaces/message.js";
+import { strictEnvs } from "../config/envConfig.js";
 
 const sqsClient = new SQS({
-    region: process.env.AWS_REGION as string,
+    region: strictEnvs.AWS_REGION as string,
     credentials:{
-        accessKeyId: process.env.AWS_ACCESS_KEY as string,
-        secretAccessKey: process.env.AWS_SECRET_KEY as string
+        accessKeyId: strictEnvs.AWS_ACCESS_KEY as string,
+        secretAccessKey: strictEnvs.AWS_SECRET_KEY as string
     }
 });
 
@@ -17,7 +18,7 @@ class SQS_Service{
     public async sendMessage( message:any){
 
         const sendParams = {
-            QueueUrl: process.env.AWS_QUEUE_URL,
+            QueueUrl: strictEnvs.AWS_QUEUE_URL,
             MessageBody: JSON.stringify(message)
         }
 
@@ -36,9 +37,9 @@ class SQS_Service{
 
         setInterval( async ()=>{
     
-            const runningTaskCount = await ecsService.getRunningTaskCount( process.env.AWS_ECS_BUILD_CLUSTER_NAME as string);
-            const maxRunningTask= Number(process.env.ECS_MAX_RUNNING_TASK_COUNT) || 200;
-            const queueDepth = await this.getCurrentApproxTotalMessagesFromQueue( process.env.AWS_QUEUE_URL as string);
+            const runningTaskCount = await ecsService.getRunningTaskCount( strictEnvs.AWS_ECS_BUILD_CLUSTER_NAME as string);
+            const maxRunningTask= Number(strictEnvs.ECS_MAX_RUNNING_TASK_COUNT) || 200;
+            const queueDepth = await this.getCurrentApproxTotalMessagesFromQueue( strictEnvs.AWS_QUEUE_URL as string);
     
             const availableSlots = Math.max( 0, maxRunningTask - runningTaskCount);
             const tasksToStart = Math.min( queueDepth, availableSlots);
@@ -53,7 +54,7 @@ class SQS_Service{
     
             // Queue Params ( Receive and process that many messages)
             const receiveQueueParams = {
-                QueueUrl: process.env.AWS_QUEUE_URL,
+                QueueUrl: strictEnvs.AWS_QUEUE_URL,
                 MaxNumberOfMessages: Math.min( tasksToStart, 10),
                 WaitTimeSeconds: 0
             }
@@ -81,27 +82,27 @@ class SQS_Service{
     
                             // ECS task
                             const ecsResponse = await ecsService.runSingleNewTask({
-                                cluster: process.env.AWS_ECS_BUILD_CLUSTER_NAME,
-                                taskDefinition: process.env.AWS_ECS_BUILD_TASK_DEFINITION_NAME,
-                                launchType: process.env.AWS_ECS_LAUNCH_TYPE as LaunchType,
+                                cluster: strictEnvs.AWS_ECS_BUILD_CLUSTER_NAME,
+                                taskDefinition: strictEnvs.AWS_ECS_BUILD_TASK_DEFINITION_NAME,
+                                launchType: strictEnvs.AWS_ECS_LAUNCH_TYPE as LaunchType,
                                 networkConfiguration: {
                                     awsvpcConfiguration: {
-                                        assignPublicIp: process.env.AWS_ECS_BUILD_ASSIGN_PUBLIC_IP as AssignPublicIp,
-                                        subnets: JSON.parse(process.env.AWS_ECS_BUILD_SUBNETS_LIST || '[]') as Array<string>,
-                                        securityGroups: JSON.parse(process.env.AWS_ECS_SECURITY_GROUPS_LIST || '[]') as Array<string>
+                                        assignPublicIp: strictEnvs.AWS_ECS_BUILD_ASSIGN_PUBLIC_IP as AssignPublicIp,
+                                        subnets: JSON.parse(strictEnvs.AWS_ECS_BUILD_SUBNETS_LIST || '[]') as Array<string>,
+                                        securityGroups: JSON.parse(strictEnvs.AWS_ECS_SECURITY_GROUPS_LIST || '[]') as Array<string>
                                     }
                                 },
                                 overrides: {
                                     containerOverrides: [
                                         {
-                                            name: process.env.AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME,
+                                            name: strictEnvs.AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME,
                                             environment: [
                                                 { name: "GITHUB_REPOSITORY_URL", value: receivedMessage.githubUrl },
                                                 { name: "REPO_ID", value: receivedMessage.repoId },
-                                                { name: "AWS_ACCESS_KEY", value: process.env.AWS_ACCESS_KEY },
-                                                { name: "AWS_SECRET_KEY", value: process.env.AWS_SECRET_KEY },
-                                                { name: "AWS_REGION", value: process.env.AWS_REGION },
-                                                { name: "AWS_BUCKET", value: process.env.AWS_BUCKET },
+                                                { name: "AWS_ACCESS_KEY", value: strictEnvs.AWS_ACCESS_KEY },
+                                                { name: "AWS_SECRET_KEY", value: strictEnvs.AWS_SECRET_KEY },
+                                                { name: "AWS_REGION", value: strictEnvs.AWS_REGION },
+                                                { name: "AWS_BUCKET", value: strictEnvs.AWS_BUCKET },
                                             ]
                                         }
                                     ]
@@ -132,7 +133,7 @@ class SQS_Service{
         if(!ReceiptHandle) return;
 
         const params = {
-            QueueUrl: process.env.AWS_QUEUE_URL,
+            QueueUrl: strictEnvs.AWS_QUEUE_URL,
             ReceiptHandle: ReceiptHandle
         }
 
