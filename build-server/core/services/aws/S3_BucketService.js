@@ -13,6 +13,8 @@ const s3 = new S3({
 
 exports.uploadFileToS3 = ( fileNameKey, filePath) =>{
 
+    if(process.env.AWS_SQS_SERVICE_EXIST!=="1"){ console.log("sqs run in local"); return;}
+
     const fileContent = fs.readFileSync(filePath);
 
     const uploadParams = {

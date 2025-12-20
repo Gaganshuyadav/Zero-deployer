@@ -4,12 +4,14 @@ const fs = require("fs");
 const { ensureEnv } = require("./core/utils/envChecker");
 const { getAllFilesPathFromFolder } = require("./core/custom_funcs/getAllFilesPath");
 const { uploadAllFilesToS3 } = require("./core/custom_funcs/uploadAllBuildFilesToS3");
+const { produceLogs } = require("./core/services/kafka/Kafka_Log_Service");
+
 
 BuiidRepo = async ()=>{
 
     if (process.env.AWS_SECRET_MANAGER_EXIST === "1") {
         await loadSecrets();
-    }
+    }   
 
     //env checker
     ensureEnv([
@@ -18,7 +20,8 @@ BuiidRepo = async ()=>{
         "AWS_ACCESS_KEY",
         "AWS_SECRET_KEY",
         "AWS_REGION",
-        "AWS_BUCKET"
+        "AWS_BUCKET",
+        "AWS_SECRET_MANAGER_SECRET_NAME"
     ]);
 
     const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git" || "https://github.com/prashantbuilds/macbook-air-m2-landing-page.git";
@@ -46,7 +49,7 @@ BuiidRepo = async ()=>{
             const hasBuildScript = pkg.scripts && pkg.scripts.build;
 
             if(hasBuildScript){
-                console.log("contains build script");
+                produceLogs("contains build script");
 
                 console.log("npm install ...");
                 const node_modules_install = exec(`npm install --prefix ${targetPath}`);
