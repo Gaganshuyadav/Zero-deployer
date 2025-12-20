@@ -2,13 +2,13 @@ import { DeleteMessageCommand, GetQueueAttributesCommand, ReceiveMessageCommand,
 import { ecsService } from "./ecsService.js";
 import type { AssignPublicIp, AwsVpcConfiguration, LaunchType } from "@aws-sdk/client-ecs";
 import type { SqsDeployMessage } from "../types/interfaces/message.js";
-import { strictEnvs } from "../config/envConfig.js";
+import { optionalEnv, strictEnvs } from "../config/envConfig.js";
 
 const sqsClient = new SQS({
-    region: strictEnvs.AWS_REGION as string,
+    region: process.env.AWS_REGION as string,
     credentials:{
-        accessKeyId: strictEnvs.AWS_ACCESS_KEY as string,
-        secretAccessKey: strictEnvs.AWS_SECRET_KEY as string
+        accessKeyId: process.env.AWS_ACCESS_KEY as string,
+        secretAccessKey: process.env.AWS_SECRET_KEY as string
     }
 });
 
@@ -16,6 +16,8 @@ class SQS_Service{
 
     //producer
     public async sendMessage( message:any){
+
+        if( optionalEnv.AWS_SQS_SERVICE_EXIST!=='1'){ console.log("send Message in local"); return;}
 
         const sendParams = {
             QueueUrl: strictEnvs.AWS_QUEUE_URL,
@@ -34,6 +36,8 @@ class SQS_Service{
     public async ReceiveMessagePollChecker( pollTime:number=5000){
 
         console.log(" Polling checker started... ");
+
+        // if( optionalEnv.AWS_SQS_SERVICE_EXIST!=='1'){ console.log("sqs running in local"); return;}
 
         setInterval( async ()=>{
     

@@ -1,4 +1,4 @@
-import { initConfig, strictEnvs } from './config/envConfig.js';
+import { initConfig, optionalEnv, strictEnvs } from './config/envConfig.js';
 initConfig();
 import express from  'express';
 import cors from "cors";
@@ -7,16 +7,14 @@ import { sqsService } from './aws/sqsService.js';
 
 
 const start = async () => {
-  
-  console.log(strictEnvs);
 
   const app = express();
   app.use(express.json());
   app.use(cors());
   
   //run poll checker function
-  sqsService.ReceiveMessagePollChecker(15000);
-  const port = strictEnvs.PORT || 3020;
+  optionalEnv.AWS_SQS_SERVICE_EXIST!=='1' ? console.log("poll Checker run in local") : sqsService.ReceiveMessagePollChecker(15000);
+  const port = Number(strictEnvs.PORT) || 3020;
   
   app.get('/', (req, res) => {
     console.log(`get request coming... on "/" `)
