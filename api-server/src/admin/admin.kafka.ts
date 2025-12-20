@@ -16,7 +16,7 @@ async function CallKafkaAdmin(){
     await admin.createTopics({
         topics:[
             {
-                topic: "avengers-current-location-updates",
+                topic: "deployment-logging",
                 numPartitions: 2
             }
         ]
