@@ -1,5 +1,6 @@
 const path = require("path");
 const { uploadFileToS3 } = require("../services/aws/S3_BucketService");
+const { produceLogs } = require("../services/kafka/Kafka_Log_Service");
 
 const uploadAllFilesToS3 = async ( allFilesPaths=[], repoId, isBuild=false)=>{
 
@@ -23,13 +24,13 @@ const uploadAllFilesToS3 = async ( allFilesPaths=[], repoId, isBuild=false)=>{
         resolve_All_S3_Response = await Promise.all(allS3Res);
     }
     catch(err){
-        console.log("----------------------------");
-        console.log("error comes :------------- ");
-        console.log(err);
-        console.log("*****")
+        await produceLogs("----------------------------");
+        await produceLogs("error comes :------------- ");
+        await produceLogs(err);
+        await produceLogs("*****")
     }
 
-    console.log("Resolved S3 Response:- ",resolve_All_S3_Response);
+    await produceLogs("Resolved S3 Response:- ",resolve_All_S3_Response);
     return resolve_All_S3_Response;
 }
 

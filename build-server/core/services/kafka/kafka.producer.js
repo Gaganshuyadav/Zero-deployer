@@ -1,7 +1,7 @@
-import { kafkaClient } from "./client.kafka.js"; 
+const { kafkaClient } = require("./client.kafka.js"); 
 
 
-async function kafkaProducer( { topic, partition, key, message }){
+exports.kafkaProducer = async ( { topic, partition, key, message })=>{
 
     const producer = kafkaClient.producer();
 
@@ -20,4 +20,3 @@ async function kafkaProducer( { topic, partition, key, message }){
 
 }
 
-export { kafkaProducer};

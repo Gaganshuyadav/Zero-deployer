@@ -1,4 +1,5 @@
-import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
+const { produceLogs } = require("../kafka/Kafka_Log_Service");
 
 const client = new SecretsManagerClient({ 
     region: process.env.AWS_REGION,
@@ -8,11 +9,11 @@ const client = new SecretsManagerClient({
     }
 });
 
-export const loadSecrets = async ()=>{
+exports.loadSecrets = async ()=>{
 
     if( !process.env.AWS_REGION || !process.env.AWS_SECRET_MANAGER_SECRET_NAME){ throw new Error("Error Occurs in Secret Manager Initialization") };
 
-    console.log("Loading AWS secrets...");
+    await produceLogs("Loading AWS secrets...");
     const command = new GetSecretValueCommand({ SecretId: process.env.AWS_SECRET_MANAGER_SECRET_NAME});
     
     const res = await client.send(command);

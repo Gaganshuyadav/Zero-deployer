@@ -10,4 +10,4 @@ function getCounter(){
     return counter;
 }
 
-export { incrementCounter, getCounter};
+module.exports = { incrementCounter, getCounter};

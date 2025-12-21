@@ -1,9 +1,9 @@
-import { Kafka} from "kafkajs";
+const { Kafka} = require("kafkajs");
 
 //create kafka client
 const kafkaClient = new Kafka({
     clientId: "my-first-kafka-app",
-    brokers: [ "133.165.23.234:9092"]
+    brokers: [ "0.0.0.0:9092"]
 })
 
-export { kafkaClient};
+module.exports = { kafkaClient};

@@ -2,10 +2,8 @@ const { incrementCounter } = require("../../custom_funcs/counter");
 const { kafkaProducer } = require("./kafka.producer")
 
 
-const produceLogs = async ( logString) =>{
+exports.produceLogs = async ( logString) =>{
     console.log(logString);
-    await kafkaProducer( { topic: "build-container-logs", partition: 1, key: incrementCounter(), message: logString});
+    await kafkaProducer( { topic: "build-container-logs", partition: 0, key: String(incrementCounter()), message: logString});
 }
 
-
-export { produceLogs};

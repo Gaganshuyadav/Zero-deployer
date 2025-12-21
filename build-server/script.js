@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const { exec} = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -15,8 +17,8 @@ BuiidRepo = async ()=>{
 
     //env checker
     ensureEnv([
-        "GITHUB_REPOSITORY_URL",
-        "REPO_ID",
+        // "GITHUB_REPOSITORY_URL",
+        // "REPO_ID",
         "AWS_ACCESS_KEY",
         "AWS_SECRET_KEY",
         "AWS_REGION",
@@ -32,7 +34,7 @@ BuiidRepo = async ()=>{
 
     const clone = exec(`git clone ${github_repository_url} ${folderPathForRepoClone}`);
 
-    console.log("cloning.....");
+    await produceLogs("cloning.....");
 
     clone.on("close", async ()=>{
 
@@ -49,13 +51,13 @@ BuiidRepo = async ()=>{
             const hasBuildScript = pkg.scripts && pkg.scripts.build;
 
             if(hasBuildScript){
-                produceLogs("contains build script");
+                await produceLogs("contains build script");
 
-                console.log("npm install ...");
+                await produceLogs("npm install ...");
                 const node_modules_install = exec(`npm install --prefix ${targetPath}`);
                 node_modules_install.on("close",async ()=>{
 
-                    console.log("Build start... ");
+                    await produceLogs("Build start... ");
 
                     // change homepage path , to serve builds
                     pkg.homepage = "./";
@@ -65,13 +67,13 @@ BuiidRepo = async ()=>{
                     const makeBuild = exec(`npm run build --prefix ${targetPath}`);
                     makeBuild.on("close", async ()=>{
 
-                        console.log("build successful");
+                        await produceLogs("build successful");
 
-                        console.log("Starting Upload Files to S3...");
+                        await produceLogs("Starting Upload Files to S3...");
                         const allFilesPathsFromBuildFolder = getAllFilesPathFromFolder( `${targetPath}build`, true);
                         await uploadAllFilesToS3( allFilesPathsFromBuildFolder, repo_id, true);
-                        console.log("All Build Files Uploaded Successfully");
-                        console.log("Destroy Container");
+                        await produceLogs("All Build Files Uploaded Successfully");
+                        await produceLogs("Destroy Container");
                         process.exit(0);
                     })
 
@@ -79,18 +81,18 @@ BuiidRepo = async ()=>{
 
             }
             else{
-                console.log("contains package.json but missing `build` script");
+                await produceLogs("contains package.json but missing `build` script");
                 return new Error("contains package.json but missing `build` script");
             }
         }
         //simple html,css,js files
         else{
-                console.log("Starting Upload Files to S3...");
+                await produceLogs("Starting Upload Files to S3...");
                 const allFilesPathsFromFolder = getAllFilesPathFromFolder( `${targetPath}`, false);
                 await uploadAllFilesToS3( allFilesPathsFromFolder, repo_id, false);
-                console.log("All Files Uploaded Successfully");
+                await produceLogs("All Files Uploaded Successfully");
                 
-                console.log("Destroy Container");
+                await produceLogs("Destroy Container");
                 process.exit(0);
         }
 
