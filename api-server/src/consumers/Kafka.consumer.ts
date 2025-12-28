@@ -1,10 +1,24 @@
+import type { EachBatchHandler, EachMessageHandler, ConsumerRunConfig } from "kafkajs";
 import { kafkaClient } from "../config/client.kafka.js";
+
+
+type ConsumerConfig = {
+    fetchMinBytes?: number,
+    fetchMaxBytes?: number,
+    fetchMaxWaits?: number
+}
+
+type ConsumerCustomRunConfig = ConsumerRunConfig & ConsumerConfig;
 
 
 async function kafkaConsumer( { topics}:{ topics:string[]}){
 
-    // const consumer = KafkaClient.consumer({ groupId: "user-1", fetchMinBytes: 1024, fetchMaxWaitMs: 2000});
-    const consumer = kafkaClient.consumer({ groupId: "user-1"});
+    // const consumer = kafkaClient.consumer({ groupId: "user-1", fetchMinBytes: 1024, fetchMaxWaitMs: 2000});
+    const consumer = kafkaClient.consumer(
+        { 
+            groupId: "user-3"
+        }
+    );
 
     console.log("Connecting Kafka Consumer");
     await consumer.connect();
@@ -14,6 +28,19 @@ async function kafkaConsumer( { topics}:{ topics:string[]}){
 
     await consumer.run({
 
+        // eachMessage: async ( { topic, partition, message})=>{
+        //     console.log("--------------------");
+        //     console.log(" topic: ",topic," partition: ",partition," message: ",message?.value?.toString());
+        //     console.log("--------------------");
+        // }
+
+        // /*
+
+        fetchMinBytes: 1 * 1024 * 1024,   
+        fetchMaxBytes: 50 * 1024 * 1024,
+        fetchMaxWaitMs: 200,      
+        autoCommit: false,
+        eachBatchAutoResolve: false,
         eachBatch: async ({
             batch,
             resolveOffset,
@@ -22,7 +49,9 @@ async function kafkaConsumer( { topics}:{ topics:string[]}){
         }) => {
 
             console.log("--------------------");
-            console.log("topic:", batch.topic, "partition:", batch.partition);
+            console.log(batch);
+            console.log("****************")
+            // console.log("topic:", batch.topic, "partition:", batch.partition);
         
             for (const message of batch.messages) {
               console.log("message:", message?.value?.toString());
@@ -34,7 +63,10 @@ async function kafkaConsumer( { topics}:{ topics:string[]}){
             await commitOffsetsIfNecessary();
             console.log("--------------------");
         }
-    })
+
+        // */
+
+    } as ConsumerCustomRunConfig);
 }
 
 export { kafkaConsumer};

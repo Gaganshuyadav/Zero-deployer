@@ -13,7 +13,7 @@ exports.loadSecrets = async ()=>{
 
     if( !process.env.AWS_REGION || !process.env.AWS_SECRET_MANAGER_SECRET_NAME){ throw new Error("Error Occurs in Secret Manager Initialization") };
 
-    await produceLogs("Loading AWS secrets...");
+    await produceLogs("Loading AWS secrets...","INFO");
     const command = new GetSecretValueCommand({ SecretId: process.env.AWS_SECRET_MANAGER_SECRET_NAME});
     
     const res = await client.send(command);

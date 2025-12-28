@@ -17,8 +17,8 @@ BuiidRepo = async ()=>{
 
     //env checker
     ensureEnv([
-        // "GITHUB_REPOSITORY_URL",
-        // "REPO_ID",
+        "GITHUB_REPOSITORY_URL",
+        "REPO_ID",
         "AWS_ACCESS_KEY",
         "AWS_SECRET_KEY",
         "AWS_REGION",
@@ -27,14 +27,14 @@ BuiidRepo = async ()=>{
     ]);
 
     const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git" || "https://github.com/prashantbuilds/macbook-air-m2-landing-page.git";
-    const repo_id = process.env.REPO_ID || 12345 || `${(Math.floor(Math.random()*10000))}`;
+    const repo_id = process.env.REPO_ID || `${(Math.floor(Math.random()*10000))}`;
 
     const folderPathForRepoClone = path.join(__dirname,`./cloned-repo/${repo_id}`); 
     const repoName = github_repository_url.split("/")[github_repository_url.split("/").length-1].toString().split(".")[0];
 
     const clone = exec(`git clone ${github_repository_url} ${folderPathForRepoClone}`);
 
-    await produceLogs("cloning.....");
+    await produceLogs("cloning.....","INFO");
 
     clone.on("close", async ()=>{
 
@@ -51,13 +51,13 @@ BuiidRepo = async ()=>{
             const hasBuildScript = pkg.scripts && pkg.scripts.build;
 
             if(hasBuildScript){
-                await produceLogs("contains build script");
+                await produceLogs("contains build script","INFO");
 
-                await produceLogs("npm install ...");
+                await produceLogs("npm install ...","INFO");
                 const node_modules_install = exec(`npm install --prefix ${targetPath}`);
                 node_modules_install.on("close",async ()=>{
 
-                    await produceLogs("Build start... ");
+                    await produceLogs("Build start... ","INFO");
 
                     // change homepage path , to serve builds
                     pkg.homepage = "./";
@@ -67,13 +67,13 @@ BuiidRepo = async ()=>{
                     const makeBuild = exec(`npm run build --prefix ${targetPath}`);
                     makeBuild.on("close", async ()=>{
 
-                        await produceLogs("build successful");
+                        await produceLogs("build successful","INFO");
 
-                        await produceLogs("Starting Upload Files to S3...");
+                        await produceLogs("Starting Upload Files to S3...","INFO");
                         const allFilesPathsFromBuildFolder = getAllFilesPathFromFolder( `${targetPath}build`, true);
                         await uploadAllFilesToS3( allFilesPathsFromBuildFolder, repo_id, true);
-                        await produceLogs("All Build Files Uploaded Successfully");
-                        await produceLogs("Destroy Container");
+                        await produceLogs("All Build Files Uploaded Successfully","INFO");
+                        await produceLogs("Destroy Container","INFO");
                         process.exit(0);
                     })
 
@@ -81,18 +81,18 @@ BuiidRepo = async ()=>{
 
             }
             else{
-                await produceLogs("contains package.json but missing `build` script");
+                await produceLogs("contains package.json but missing `build` script","ERROR");
                 return new Error("contains package.json but missing `build` script");
             }
         }
         //simple html,css,js files
         else{
-                await produceLogs("Starting Upload Files to S3...");
+                await produceLogs("Starting Upload Files to S3...","INFO");
                 const allFilesPathsFromFolder = getAllFilesPathFromFolder( `${targetPath}`, false);
                 await uploadAllFilesToS3( allFilesPathsFromFolder, repo_id, false);
-                await produceLogs("All Files Uploaded Successfully");
+                await produceLogs("All Files Uploaded Successfully","INFO");
                 
-                await produceLogs("Destroy Container");
+                await produceLogs("Destroy Container","INFO");
                 process.exit(0);
         }
 

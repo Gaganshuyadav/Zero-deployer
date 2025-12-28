@@ -24,13 +24,13 @@ const uploadAllFilesToS3 = async ( allFilesPaths=[], repoId, isBuild=false)=>{
         resolve_All_S3_Response = await Promise.all(allS3Res);
     }
     catch(err){
-        await produceLogs("----------------------------");
-        await produceLogs("error comes :------------- ");
-        await produceLogs(err);
-        await produceLogs("*****")
+        await produceLogs("----------------------------","ERROR");
+        await produceLogs("error comes :------------- ","ERROR");
+        await produceLogs(err,"ERROR");
+        await produceLogs("*****","ERROR")
     }
 
-    await produceLogs("Resolved S3 Response:- ",resolve_All_S3_Response);
+    await produceLogs(`Resolved S3 Response:- ${JSON.stringify(resolve_All_S3_Response)}`, "INFO");
     return resolve_All_S3_Response;
 }
 

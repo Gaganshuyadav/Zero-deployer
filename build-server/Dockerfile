@@ -21,6 +21,9 @@ RUN npm install
 COPY script.js ./
 COPY ./core/ ./core/
 
+#env
+ENV KAFKAJS_NO_PARTITIONER_WARNING=1
+
 #Run script at run time
 CMD ["node","script.js"]
 

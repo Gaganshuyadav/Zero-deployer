@@ -4,6 +4,7 @@ import express from  'express';
 import cors from "cors";
 import { generateRandomId } from './utils/generate-functions.js';
 import { sqsService } from './aws/sqsService.js';
+import { kafkaConsumer } from './consumers/Kafka.consumer.js';
 
 
 const start = async () => {
@@ -14,6 +15,8 @@ const start = async () => {
   
   //run poll checker function
   optionalEnv.AWS_SQS_SERVICE_EXIST!=='1' ? console.log("poll Checker run in local") : sqsService.ReceiveMessagePollChecker(15000);
+  //run kafka consumer
+  optionalEnv.IS_KAFKA_EXIST!=='1' ? console.log("kafka Consumer run in local") : kafkaConsumer({ topics: ["build-container-logs"]});
   const port = Number(strictEnvs.PORT) || 3020;
   
   app.get('/', (req, res) => {

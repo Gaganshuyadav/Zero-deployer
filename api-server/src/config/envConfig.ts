@@ -26,7 +26,8 @@ const strictEnvs = {
 const optionalEnv = {
     AWS_SECRET_MANAGER_EXIST: process.env.AWS_SECRET_MANAGER_EXIST,
     AWS_SQS_SERVICE_EXIST: process.env.AWS_SQS_SERVICE_EXIST,
-    AWS_ECS_SERVICE_EXIST: process.env.AWS_ECS_SERVICE_EXIST 
+    AWS_ECS_SERVICE_EXIST: process.env.AWS_ECS_SERVICE_EXIST,
+    IS_KAFKA_EXIST: process.env.IS_KAFKA_EXIST
 };
 
 let ENV = {
