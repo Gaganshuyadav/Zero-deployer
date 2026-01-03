@@ -1,6 +1,9 @@
 import { type EachBatchPayload, type KafkaMessage } from "kafkajs";
 import { uuid } from "zod";
 import os from "os";
+import { strictEnvs } from "../config/envConfig.js";
+import { insertChunkIntoClickhouse } from "./clickhouseService.js";
+import type { ClickHouseLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
 
 async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfNecessary, uncommittedOffsets, isRunning, isStale, pause}:EachBatchPayload ){
 
@@ -10,7 +13,9 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
 
     console.log(`Batch received: topic=${topic} partition=${partition} messages=${messages.length}`);
 
-    const rows = messages.map( ( message:KafkaMessage)=>{
+    // Create rows for Clickhouse Schema --
+
+    const rows:Array<ClickHouseLogEvent> = messages.map( ( message:KafkaMessage)=>{
         let parsed=null;
         try{
             const messageValueData = message?.value?.toString();
@@ -37,10 +42,34 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             host: parsed?.host ? parsed?.host : os.hostname(),
             event_time: parsed?.created_at ? new Date(parsed?.created_at).toISOString() : new Date().toISOString()
         }
-
-
-       
-
     })
+    .filter(Boolean); // remove null rows
+
+
+
+
+    // chunk rows to avoid giant inserts --
+    const BATCH_CHUNK_SIZE = Number(strictEnvs.KAFKA_BATCH_PROCESS_CHUNK_SIZE);
+
+    const chunks = [];
+    for( let i=0; i < rows.length; i+=BATCH_CHUNK_SIZE ){
+        chunks.push( rows.slice( i, i + BATCH_CHUNK_SIZE));
+    }
+
+    // highest offset processed in this batch --
+    let highestOffset = -1;
+
+    try{
+        for( const chunk of chunks){
+
+            // before heavy operation, keep the group alive
+            await heartbeat();
+
+            // Insert chunk to Clickhouse ( with retries)
+            insertChunkIntoClickhouse(chunk);
+        }
+    }
+
+
 
 }

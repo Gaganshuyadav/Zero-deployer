@@ -30,6 +30,8 @@ const strictEnvs = {
         CLICKHOUSE_URL: process.env.CLICKHOUSE_URL,
         CLICKHOUSE_USERNAME: process.env.CLICKHOUSE_USERNAME,
         CLICKHOUSE_PASSWORD: process.env.CLICKHOUSE_PASSWORD,
+
+        KAFKA_BATCH_PROCESS_CHUNK_SIZE: process.env.KAFKA_BATCH_PROCESS_CHUNK_SIZE || 3
 };
 
 const optionalEnv = {
