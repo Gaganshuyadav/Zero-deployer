@@ -43,6 +43,7 @@ model Deployment {
 
 model log_events{
 
+  event_id String @id @default(uuid())
   user_id String
   project_id String
   deployment_id String
@@ -55,7 +56,6 @@ model log_events{
   host String
 
   event_time DateTime @default(now())
-  event_id String @id @default(uuid())
 
 }
 

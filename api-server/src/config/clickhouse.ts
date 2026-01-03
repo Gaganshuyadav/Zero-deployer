@@ -1,4 +1,133 @@
 
+import { createClient} from "@clickhouse/client";
+import { strictEnvs } from "./envConfig.js";
+
+const clickhouseClient = createClient({
+    url: strictEnvs.CLICKHOUSE_URL || "http://localhost:8123",
+    username: strictEnvs.CLICKHOUSE_USERNAME || "default",
+    password: strictEnvs.CLICKHOUSE_PASSWORD || ""
+})
+
+export { clickhouseClient};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // CREATE TABLE log_events
 // (
 //     user_id        UUID,
@@ -36,7 +165,7 @@
 
 
 // const logEvent = {
-//     event_id: crypto.randomUUID(),        // uniqueness
+//     event_id: crypto.randomUUID(),     
 //     user_id: process.env.USER_ID,
 //     project_id: process.env.PROJECT_ID,
 //     deployment_id: process.env.REPO_ID,
@@ -45,7 +174,7 @@
 //     message,
 
 //     source: 'build',
-//     container_id: process.env.HOSTNAME,   // ECS sets this
+//     container_id: process.env.HOSTNAME,  
 //     host: os.hostname(),
 
 //     event_time: new Date().toISOString()

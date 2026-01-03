@@ -10,7 +10,10 @@ const strictEnvs = {
         AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
         AWS_REGION: process.env.AWS_REGION,
         AWS_BUCKET: process.env.AWS_BUCKET,
-        AWS_SECRET_MANAGER_SECRET_NAME: process.env.AWS_SECRET_MANAGER_SECRET_NAME
+        AWS_SECRET_MANAGER_SECRET_NAME: process.env.AWS_SECRET_MANAGER_SECRET_NAME,
+        SERVER_USER_ID: process.env.SERVER_USER_ID,
+        SERVER_PROJECT_ID: process.env.SERVER_PROJECT_ID,
+        SERVER_DEPLOYMENT_ID: process.env.SERVER_DEPLOYMENT_ID
 };
 
 const optionalEnv = {

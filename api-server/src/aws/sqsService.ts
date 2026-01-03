@@ -107,6 +107,9 @@ class SQS_Service{
                                                 { name: "AWS_SECRET_KEY", value: strictEnvs.AWS_SECRET_KEY },
                                                 { name: "AWS_REGION", value: strictEnvs.AWS_REGION },
                                                 { name: "AWS_BUCKET", value: strictEnvs.AWS_BUCKET },
+                                                { name: "SERVER_USER_ID", value: `user_id_${Math.ceil((Math.random())*10000000000)}`},
+                                                { name: "SERVER_PROJECT_ID", value: `project_id_${Math.ceil((Math.random())*10000000000)}`},
+                                                { name: "SERVER_DEPLOYMENT_ID", value: `deployment_id_${Math.ceil((Math.random())*10000000000)}`}
                                             ]
                                         }
                                     ]

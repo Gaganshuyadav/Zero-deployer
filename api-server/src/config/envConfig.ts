@@ -8,6 +8,7 @@ const strictEnvs = {
         AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
         AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
         AWS_REGION: process.env.AWS_REGION, 
+        AWS_SECRET_MANAGER_SECRET_NAME: process.env.AWS_SECRET_MANAGER_SECRET_NAME,
         AWS_QUEUE_URL: process.env.AWS_QUEUE_URL,
         AWS_BUCKET: process.env.AWS_BUCKET,
         AWS_ECS_BUILD_CLUSTER_NAME: process.env.AWS_ECS_BUILD_CLUSTER_NAME,
@@ -18,9 +19,17 @@ const strictEnvs = {
         AWS_ECS_SECURITY_GROUPS_LIST: process.env.AWS_ECS_SECURITY_GROUPS_LIST,
         AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME: process.env.AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME ,
         ECS_MAX_RUNNING_TASK_COUNT: process.env.ECS_MAX_RUNNING_TASK_COUNT,
+        
         POSTGRES_DB_URL: process.env.POSTGRES_DB_URL,
+
         KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
-        AWS_SECRET_MANAGER_SECRET_NAME: process.env.AWS_SECRET_MANAGER_SECRET_NAME,
+        KAFKA_BROKERS: process.env.KAFKA_BROKERS,
+        KAFKA_TOPIC: process.env.KAFKA_TOPIC,
+        KAFKA_GROUP: process.env.KAFKA_GROUP,
+
+        CLICKHOUSE_URL: process.env.CLICKHOUSE_URL,
+        CLICKHOUSE_USERNAME: process.env.CLICKHOUSE_USERNAME,
+        CLICKHOUSE_PASSWORD: process.env.CLICKHOUSE_PASSWORD,
 };
 
 const optionalEnv = {
