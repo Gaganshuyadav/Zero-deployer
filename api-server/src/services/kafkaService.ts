@@ -122,7 +122,11 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             setTimeout( async()=>{
 
                 console.info(`Resuming partition ${topic}[${partition}] for ${Number(strictEnvs.KAFKA_CONSUMER_PAUSE_ON_FAILURE_DURATION_MS)}ms due to ${nowCount} consecutive failures`);
-                await kafkaConsumer.resume([ topic, partition])
+                await kafkaConsumer.resume([{ topic, partitions:[partition]}])
+
+                // optionally reset failure count
+                failureCountsMap.delete(key);
+
             }, Number(strictEnvs.KAFKA_CONSUMER_PAUSE_ON_FAILURE_DURATION_MS) );
         }
 
