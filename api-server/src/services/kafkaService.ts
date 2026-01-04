@@ -130,10 +130,10 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             }, Number(strictEnvs.KAFKA_CONSUMER_PAUSE_ON_FAILURE_DURATION_MS) );
         }
 
-
     }
 
-
-
-
 }
+
+
+
+export { processBatch};

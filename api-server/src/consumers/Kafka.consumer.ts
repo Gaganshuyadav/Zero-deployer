@@ -1,5 +1,7 @@
 import type { EachBatchHandler, EachMessageHandler, ConsumerRunConfig } from "kafkajs";
 import { kafkaClient } from "../config/client.kafka.js";
+import { processBatch } from "../services/kafkaService.js";
+import { shutdownState } from "../states/shutdownState.js";
 
 
 type ConsumerConfig = {
@@ -11,43 +13,49 @@ type ConsumerConfig = {
 type ConsumerCustomRunConfig = ConsumerRunConfig & ConsumerConfig;
 
 
+
+const consumerClient = kafkaClient.consumer(
+    { 
+        groupId: "user-3"
+    }
+);
+
+
 async function kafkaConsumer( { topics}:{ topics:string[]}){
 
     // const consumer = kafkaClient.consumer({ groupId: "user-1", fetchMinBytes: 1024, fetchMaxWaitMs: 2000});
-    const consumer = kafkaClient.consumer(
-        { 
-            groupId: "user-3"
-        }
-    );
+    // const consumer = kafkaClient.consumer(
+    //     { 
+    //         groupId: "user-3"
+    //     }
+    // );
 
     console.log("Connecting Kafka Consumer");
-    await consumer.connect();
+    await consumerClient.connect();
     console.log("Consumer Connected Successfully");
 
-    await consumer.subscribe({ topics: [...topics] });
+    await consumerClient.subscribe({ topics: [...topics] });
 
-    await consumer.run({
-
-        // eachMessage: async ( { topic, partition, message})=>{
-        //     console.log("--------------------");
-        //     console.log(" topic: ",topic," partition: ",partition," message: ",message?.value?.toString());
-        //     console.log("--------------------");
-        // }
-
-        // /*
+    await consumerClient.run({
 
         fetchMinBytes: 1 * 1024 * 1024,   
         fetchMaxBytes: 50 * 1024 * 1024,
         fetchMaxWaitMs: 200,      
         autoCommit: false,
         eachBatchAutoResolve: false,
-        eachBatch: async ({
-            batch,
-            resolveOffset,
-            heartbeat,
-            commitOffsetsIfNecessary
-        }) => {
 
+        eachBatch: async ( kafkaPayload) => {
+
+            // If shutting down, skip processing to let graceful shutdown happen
+            if( shutdownState.getShutdownState){
+                console.info("Shutting down: skipping batch processing");
+                return;
+            }
+
+            // process Batch in chunks
+            await processBatch( kafkaPayload, consumerClient);
+
+            /*
             console.log("--------------------");
             console.log(batch);
             console.log("****************")
@@ -62,11 +70,12 @@ async function kafkaConsumer( { topics}:{ topics:string[]}){
         
             await commitOffsetsIfNecessary();
             console.log("--------------------");
+
+            */
         }
 
-        // */
 
     } as ConsumerCustomRunConfig);
 }
 
-export { kafkaConsumer};
+export { kafkaConsumer, consumerClient};

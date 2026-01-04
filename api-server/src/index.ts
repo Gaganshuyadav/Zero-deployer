@@ -4,7 +4,9 @@ import express from  'express';
 import cors from "cors";
 import { generateRandomId } from './utils/generate-functions.js';
 import { sqsService } from './aws/sqsService.js';
-import { kafkaConsumer } from './consumers/Kafka.consumer.js';
+import { consumerClient, kafkaConsumer } from './consumers/Kafka.consumer.js';
+import { shutdownSignals } from './constants/shutdownSignals.js';
+import { shutdownState } from './states/shutdownState.js';
 
 
 const start = async () => {
@@ -19,6 +21,30 @@ const start = async () => {
   optionalEnv.IS_KAFKA_EXIST!=='1' ? console.log("kafka Consumer run in local") : kafkaConsumer({ topics: ["build-container-logs"]});
   const port = Number(strictEnvs.PORT) || 3020;
   
+// Graceful Shutdown Process
+shutdownSignals.forEach(signal => {
+  process.on(signal, async () => {
+    console.log(`Received ${signal}`);
+
+    if( shutdownState.getShutdownState) return;
+
+    console.info("Shutdown requested: disconnecting consumer...");
+    try{
+      await consumerClient.disconnect();
+      console.info("Consumer Disconnected");
+    }
+    catch( err){
+      console.error("Error during consumer disconnect:", err);
+    }
+    finally{
+      process.exit(0);
+    }
+
+  });
+});
+
+
+
   app.get('/', (req, res) => {
     console.log(`get request coming... on "/" `)
     res.send('Hello from Nodejs Server!! 😁');
