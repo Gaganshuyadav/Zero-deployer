@@ -17,4 +17,11 @@ type LogLevelEnum = "DEBUG" | "INFO" | "WARN" | "ERROR" | "FATAL"
 
 type SourceEnum = "CONTAINER" | "BUILD" | "RUNTIME" | "SYSTEM";
 
-export type { ClickHouseLogEvent};
+
+type KafkaMessageRawLogEvent = ClickHouseLogEvent & {
+    kafka_partition: number,
+    kafka_offset: string
+}
+
+
+export type { ClickHouseLogEvent, KafkaMessageRawLogEvent};
