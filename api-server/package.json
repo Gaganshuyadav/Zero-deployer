@@ -22,9 +22,11 @@
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^6.19.0",
     "@types/cors": "^2.8.19",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "kafkajs": "^2.2.4",
     "nodemon": "^3.1.10",
     "p-retry": "^7.1.1",
@@ -32,7 +34,9 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "@types/p-retry": "^3.0.0",
     "@types/pg": "^8.15.6",

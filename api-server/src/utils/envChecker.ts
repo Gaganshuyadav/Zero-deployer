@@ -5,7 +5,13 @@ export const ensureEnv  = ( required:Record<any, any>, message:string="Missing e
 
     const require:Array<string> = Object.keys(required);
 
-    const missing = require.filter(envName=>( !process.env[envName] || process.env[envName].trim()===""));
+    const missing = require.filter((envName:any)=>{ 
+
+        let value = required[envName];
+        return (value===null || value===undefined || String(value)?.trim()==="")
+    }
+    );
+        
     if(missing.length){
         const msg = `${message}${missing.join(", ")}`;
         console.error(msg);

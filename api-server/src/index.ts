@@ -7,6 +7,7 @@ import { sqsService } from './aws/sqsService.js';
 import { consumerClient, kafkaConsumer } from './consumers/Kafka.consumer.js';
 import { shutdownSignals } from './constants/shutdownSignals.js';
 import { shutdownState } from './states/shutdownState.js';
+import router from './routes/index.js';
 
 
 const start = async () => {
@@ -44,12 +45,6 @@ shutdownSignals.forEach(signal => {
 });
 
 
-
-  app.get('/', (req, res) => {
-    console.log(`get request coming... on "/" `)
-    res.send('Hello from Nodejs Server!! 😁');
-  });
-  
   app.put("/deploy", ( req, res)=>{
     
     const { githubUrl} = req.body;
@@ -71,11 +66,9 @@ shutdownSignals.forEach(signal => {
   
   
   })
-  
-  app.get('/health', (req, res) => {
-    console.log("health check done")
-    res.send('Everything is good here 💪');
-  });
+
+
+  app.use(router);
   
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

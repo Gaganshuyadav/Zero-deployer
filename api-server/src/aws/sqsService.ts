@@ -42,7 +42,7 @@ class SQS_Service{
         setInterval( async ()=>{
     
             const runningTaskCount = await ecsService.getRunningTaskCount( strictEnvs.AWS_ECS_BUILD_CLUSTER_NAME as string);
-            const maxRunningTask= Number(strictEnvs.ECS_MAX_RUNNING_TASK_COUNT) || 200;
+            const maxRunningTask= Number(strictEnvs.AWS_ECS_MAX_RUNNING_TASK_COUNT) || 200;
             const queueDepth = await this.getCurrentApproxTotalMessagesFromQueue( strictEnvs.AWS_QUEUE_URL as string);
     
             const availableSlots = Math.max( 0, maxRunningTask - runningTaskCount);
