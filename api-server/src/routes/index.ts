@@ -1,10 +1,11 @@
 import { Router } from "express";
 import auth from "./auth.route.js";
 import user from "./user.route.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
     console.log(`get request coming... on "/" `)
     res.send('Hello from Nodejs Server!! 😁');
   });

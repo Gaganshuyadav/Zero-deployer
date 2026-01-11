@@ -8,6 +8,7 @@ import { consumerClient, kafkaConsumer } from './consumers/Kafka.consumer.js';
 import { shutdownSignals } from './constants/shutdownSignals.js';
 import { shutdownState } from './states/shutdownState.js';
 import router from './routes/index.js';
+import { errorMiddleware } from './middleware/error.js';
 
 
 const start = async () => {
@@ -68,7 +69,11 @@ shutdownSignals.forEach(signal => {
   })
 
 
+  // routes
   app.use(router);
+
+  // error handler
+  app.use(errorMiddleware);
   
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

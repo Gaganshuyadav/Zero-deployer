@@ -20,8 +20,8 @@ class UserService{
     }
 
     public getUser = async ( id:string):Promise<any> =>{
-        
 
+        // 
     } 
 
     public getAllUsers = async ( ):Promise<any> =>{

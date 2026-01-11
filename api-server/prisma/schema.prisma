@@ -12,11 +12,13 @@ datasource db {
 model User {
   id String @id @default(uuid())
   firstName String @db.VarChar(100) @map("first_name")
-  lastName String @db.VarChar(100) @map("last_name")
+  lastName String? @db.VarChar(100) @map("last_name")
   email String @unique
   password String
+  userRole UserRoleEnum? @map("user_role")
   project Project[]
 }
+
 
 model Project {
   id String @id @default(uuid())
@@ -141,4 +143,9 @@ enum SourceEnum {
   BUILD 
   RUNTIME
   SYSTEM
+}
+
+enum UserRoleEnum {
+  Admin
+  User
 }
