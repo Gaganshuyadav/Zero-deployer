@@ -14,12 +14,6 @@ const errorMiddleware = ( err:MyErrorHandler|Error, req:Request, res:Response, n
         ({ message="Internal Server Error"} = err);
     }
 
-    console.log("---------------------------");
-
-    console.log("message:: ", message);
-    console.log("status Code:: ", statusCode);
-    console.log('***************************');
-
     return res.json({
         error: false,
         message: message
