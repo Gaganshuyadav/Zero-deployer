@@ -37,7 +37,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.9",
     "@types/p-retry": "^3.0.0",
     "@types/pg": "^8.15.6",
     "concurrently": "^9.2.1",

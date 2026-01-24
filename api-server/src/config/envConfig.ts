@@ -24,7 +24,7 @@ const strictEnvs = {
         AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME: process.env.AWS_ECS_BUILD_TASK_CONTAINER_IMAGE_NAME ,
         AWS_ECS_MAX_RUNNING_TASK_COUNT: process.env.AWS_ECS_MAX_RUNNING_TASK_COUNT,
         
-        POSTGRES_DB_URL: process.env.POSTGRES_DB_URL,
+        POSTGRES_DB_URL: process.env.POSTGRES_DB_URL as string,
 
         KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
         KAFKA_BROKERS: process.env.KAFKA_BROKERS,

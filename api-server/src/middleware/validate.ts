@@ -37,12 +37,13 @@ export const validate =
             }
             catch(err){
 
+                console.log(err)
                 if( err instanceof z.ZodError){
                     return res.status(400).json({
                         error: true,
                         message: `Validation failed on path [${req.originalUrl}]`,
                         errors: JSON.parse(err.message)?.map((err:any)=>{
-                            return `${err.message} -- [${err.code}]`;
+                            return `${err.path[err.path.length-1]} -- ${err.message} -- [${err.code}]`;
                         })
                     })
                 }

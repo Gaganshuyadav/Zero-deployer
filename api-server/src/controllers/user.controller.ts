@@ -2,6 +2,7 @@ import type { NextFunction, Response, Request } from "express";
 import catchAsyncErrors from "../middleware/catch-async.js";
 import type { User } from "../generated/prisma/client.js";
 import { authService } from "../services/auth.service.js";
+import { userService } from "../services/user.service.js";
 
 class UserController{
 
@@ -13,9 +14,17 @@ class UserController{
 
         const generateToken  = await authService.generateAuthToken( { email, password });
 
-
+        // const newUser = await userService.createUser(userBody);
         
-        return res.json({ error: false})
+        // return res.json({
+        //     error: false, 
+        //     token: generateToken,
+        //     user: newUser
+        // })
+
+        return res.json({
+            error: false
+        })
 
     })
 
