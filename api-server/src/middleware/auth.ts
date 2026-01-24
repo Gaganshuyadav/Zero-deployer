@@ -5,21 +5,19 @@ import { MyErrorHandler } from "./error.js";
 
 const authenticate = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction)=>{
 
-    console.log("reqBody: ", req.body);
+    const token = req.headers?.authorization?.split(" ")[1];
 
-    if( req.body.message==="call"){
+    if( token){
+        throw new MyErrorHandler("Authentication Failed", 400);
+    }
+
+
+    try{
        next();
     }
-
-    if( req.body.message==="call1"){
-        throw new Error("i am not custom error");
+    catch(err){
+       throw new MyErrorHandler("i am custom error", 5000);
     }
-    else{
-        throw new MyErrorHandler("i am custom error", 5000);
-    }
-    
-    
-
 
 })
 

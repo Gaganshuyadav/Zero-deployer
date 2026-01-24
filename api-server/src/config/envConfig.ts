@@ -2,9 +2,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import { ensureEnv} from "../utils/envChecker.js";
 import { secretManagerService } from '../aws/secretManagerService.js';
+import type { JwtExpires } from "../types/type/jwt.js";
 
 const strictEnvs = {
         PORT: process.env.PORT,
+        JWT_SECRET: process.env.JWT_SECRET as string,
+        JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN as JwtExpires,
+
         AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
         AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
         AWS_REGION: process.env.AWS_REGION, 

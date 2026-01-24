@@ -19,7 +19,6 @@ export const validate =
                     params: req.params
                 })
 
-                console.log("i am parsed:: ", parsed);
 
                 // overwrite with validated data, (body is writable, but query and params not writable in express new versions, now i am using Object.assign for this)
 

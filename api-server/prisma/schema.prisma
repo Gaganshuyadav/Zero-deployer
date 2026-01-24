@@ -9,6 +9,7 @@ datasource db {
   url      = env("POSTGRES_DB_URL")
 }
 
+
 model User {
   id String @id @default(uuid())
   firstName String @db.VarChar(100) @map("first_name")
@@ -20,10 +21,22 @@ model User {
 }
 
 
-model Project {
+model Team{
   id String @id @default(uuid())
+  name String
+  type ProjectType @default(HOBBY)
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String
+  project Project[]
+  createdAt DateTime @map("created_at") @default(now())
+  updatedAt DateTime @map("updated_at") @updatedAt
+}
+
+
+model Project {
+  id String @id @default(uuid())
+  team Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
+  team_id String
   name String
   createdBy String @map("created_by")
   gitUrl String @map("git_url")
@@ -34,6 +47,7 @@ model Project {
   updatedAt DateTime @map("updated_at") @updatedAt
 }
 
+
 model Deployment {
   id String @id @default(uuid())
   project Project @relation( fields: [project_id], references: [id], onDelete: Cascade)
@@ -42,6 +56,7 @@ model Deployment {
   createdAt DateTime @map("created_at") @default(now())
   updatedAt DateTime @map("updated_at") @updatedAt
 }
+
 
 model log_events{
 
@@ -60,6 +75,7 @@ model log_events{
   event_time DateTime @default(now())
 
 }
+
 
 
 // CREATE TABLE log_events
@@ -148,4 +164,9 @@ enum SourceEnum {
 enum UserRoleEnum {
   Admin
   User
+}
+
+enum ProjectType {
+  HOBBY   // personal / learning
+  PRO     // client / production
 }

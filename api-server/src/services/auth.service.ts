@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { strictEnvs } from "../config/envConfig.js";
 
 class AuthService{
 
@@ -6,10 +7,13 @@ class AuthService{
 
         if( !tokenBody) throw new Error("");
 
-        // const token = await jwt.sign( tokenBody)
+        const token = jwt.sign( tokenBody, strictEnvs.JWT_SECRET, { expiresIn: strictEnvs.JWT_EXPIRES_IN} );
 
+        return token;
 
     }
+
+
 }
 
 const authService = new AuthService();

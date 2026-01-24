@@ -1,4 +1,4 @@
-import AppLayout from "@/components/layout/AppLayout";
+import ProjectMainLayout from "@/components/layout/ProjectMainLayout";
 
 const ExampleComponent = () =>{
 
@@ -6,8 +6,76 @@ const ExampleComponent = () =>{
         <div>
             <div>I am ironman</div>
             <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
+            <div>I am ironman</div>
+            <div>i am burning with glorious purpose</div>
         </div>
     )
 }
 
-export default AppLayout()(ExampleComponent);
+export default ProjectMainLayout()(ExampleComponent);
