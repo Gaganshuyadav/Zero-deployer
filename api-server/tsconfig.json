@@ -46,6 +46,9 @@
     "src/**/*"
   ],
   "exclude": [
-    "prisma.config.ts"
+    "prisma",
+    "prisma.config.ts",
+    "dist",
+    "node_modules"
   ]
 }

@@ -14,13 +14,13 @@ class UserController{
 
         const generateToken  = await authService.generateAuthToken( { email, password });
 
-        // const newUser = await userService.createUser(userBody);
+        const newUser = await userService.createUser(userBody);
         
-        // return res.json({
-        //     error: false, 
-        //     token: generateToken,
-        //     user: newUser
-        // })
+        return res.json({
+            error: false, 
+            token: generateToken,
+            user: newUser
+        })
 
         return res.json({
             error: false

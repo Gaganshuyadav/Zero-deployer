@@ -1,8 +1,10 @@
 
 import { defineConfig, env } from 'prisma/config'
+import dotenv from 'dotenv'
+import path from 'path'
 
-console.log("ENV =", process.env.POSTGRES_DB_URL);
-console.log("ENV =--", env('POSTGRES_DB_URL'));
+// Load .env file explicitly
+dotenv.config({ path: path.resolve(process.cwd(), '.env') })
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -10,6 +12,6 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: env('POSTGRES_DB_URL')
+    url: process.env.POSTGRES_DB_URL as string
   },
 })
