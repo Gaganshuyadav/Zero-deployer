@@ -11,7 +11,7 @@ type RequestSchemaShape = {
 export const validate = 
     ( schema: z.ZodType<RequestSchemaShape>) => {
         return ( req:Request, res:Response, next:NextFunction) => {
-            console.log("-------------")
+            
             try{
                 const parsed = schema.parse({
                     body: req.body,
