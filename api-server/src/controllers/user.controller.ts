@@ -3,6 +3,7 @@ import catchAsyncErrors from "../middleware/catch-async.js";
 import type { User } from "../generated/prisma/client.js";
 import { authService } from "../services/auth.service.js";
 import { userService } from "../services/user.service.js";
+import { MyErrorHandler } from "../middleware/error.js";
 
 class UserController{
 
@@ -12,7 +13,14 @@ class UserController{
 
         const { email, password} = userBody;
 
-        const generateToken  = await authService.generateAuthToken( { email, password });
+        // check if user exist already
+        const user = await userService.verifyUserExist(email);
+
+        if(user){
+            throw new MyErrorHandler("User Already Exist", 400);
+        }
+
+        const generateToken  = await authService.generateAuthToken( { email});
 
         const newUser = await userService.createUser(userBody);
         
@@ -20,10 +28,6 @@ class UserController{
             error: false, 
             token: generateToken,
             user: newUser
-        })
-
-        return res.json({
-            error: false
         })
 
     })

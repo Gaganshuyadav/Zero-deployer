@@ -18,6 +18,8 @@ model User {
   password String
   userRole UserRoleEnum? @map("user_role") @default(User)
   Team Team[]
+  createdAt DateTime @map("created_at") @default(now())
+  updatedAt DateTime @map("updated_at") @updatedAt
 }
 
 
