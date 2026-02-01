@@ -15,7 +15,11 @@ const start = async () => {
 
   const app = express();
   app.use(express.json());
-  app.use(cors());
+  app.use(cors({
+    origin: ["http://localhost:5173", "*"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  }));
   
   //run poll checker function
   optionalEnv.AWS_SQS_SERVICE_EXIST!=='1' ? console.log("poll Checker run in local") : sqsService.ReceiveMessagePollChecker(15000);

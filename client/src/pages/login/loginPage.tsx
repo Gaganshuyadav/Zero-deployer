@@ -1,41 +1,5 @@
-// import { Button } from "@/components/ui/button"
-// import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
-// import { Input } from "@/components/ui/input"
 
-
-
-// export function LoginPage() {
-
-//   return (
-//     <FieldGroup className="border-red-300 border-4">
-//       <Field>
-//         <FieldLabel htmlFor="fieldgroup-name">Name</FieldLabel>
-//         <Input id="fieldgroup-name" placeholder="Jordan Lee" />
-//       </Field>
-//       <Field>
-//         <FieldLabel htmlFor="fieldgroup-email">Email</FieldLabel>
-//         <Input
-//           id="fieldgroup-email"
-//           type="email"
-//           placeholder="name@example.com"
-//         />
-//         <FieldDescription>
-//           We&apos;ll send updates to this address.
-//         </FieldDescription>
-//       </Field>
-//       <Field orientation="horizontal">
-//         <Button type="reset" variant="outline">
-//           Reset
-//         </Button>
-//         <Button type="submit">Submit</Button>
-//       </Field>
-//     </FieldGroup>
-//   )
-// }
-
-
-
-
+import { InputError } from "@/components/common-components/errors/InputError"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -51,27 +15,78 @@ import { Label } from "@/components/ui/label"
 import { userThunk } from "@/redux/features/thunks/user"
 import type { AppDispatch } from "@/redux/store"
 import type { UserStateType } from "@/types/redux.type"
-import { use, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector} from "react-redux";
+import z from "zod";
+import { toast } from "sonner"
+import { useNavigate } from "react-router"
 
 function LoginPage() {
 
   const dispatch = useDispatch<AppDispatch>();
-  const {user, isUserLoading, isAuthenticated, errors} = useSelector((state:{ user:UserStateType})=>(state.user))
-
-  const [ openLoginPage, setOpenLoginPage] = useState(true);
+  const {isUserLoading, errors, isAuthenticated} = useSelector((state:{ user:UserStateType})=>(state.user));
+  const navigate = useNavigate();
 
   const [ email, setEmail] = useState("");
   const [ password, setPassword] = useState("");
+  const [ validationErrors, setValidationErrors] = useState<{email?:string, password?:string}>({});
 
   const handleUserLogin = ()=>{
+    if(validateLogin()){
+      return;
+    }
     dispatch( userThunk.userLogin({ email, password}));
+    setEmail("");setPassword("");
   }
 
+
+  const validateLogin = ():boolean =>{
+      
+      const registerSchema = z.object({
+          email: z.string().email("Invalid email address").min(1,"Email is not provided"),
+          password: z.string().min(4, "Password must be at least 4 characters")
+      })
+  
+      const parse = registerSchema.safeParse({ email, password});
+  
+      if(parse?.error?.message){
+          const zodErrorList = JSON.parse(parse.error?.message);
+          if( zodErrorList.length > 0){
+              const getErrors:Array<any> = zodErrorList.map((error:any)=>{
+                  return { [error.path[0]]: error.message };
+              })
+  
+              const getErrorsObj = getErrors.reduce((prev,curr)=>{
+                  return { ...prev, ...curr};
+              },{});
+  
+              setValidationErrors(getErrorsObj);
+              return true;
+          }
+      }
+  
+      return false;
+  
+    
+  }
+
+
+  useEffect(()=>{
+    if(errors.length>0){
+        toast.error(errors[0]);
+    }
+  } , [ errors]);
+
+  //navigation
+  // if(isAuthenticated){
+  //   navigate("/");
+  // }
+  
+
   return (
-    <Dialog open={openLoginPage}>
+    <Dialog open={true}>
       <form>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] [&>button]:hidden">
           <DialogHeader>
             <DialogTitle className="text-xl">Login</DialogTitle>
             <DialogDescription>
@@ -79,36 +94,24 @@ function LoginPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
-            
-            {/* <div className="grid gap-3">
-              <Label htmlFor="name-1">First Name</Label>
-              <Input id="name-1" name="name" placeholder="Enter First Name "/>
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="name-2">Last Name</Label>
-              <Input id="name-2" name="username" placeholder="Enter Last Name"/>
-            </div> */}
 
             <div className="grid gap-3">
               <Label htmlFor="email">Email</Label>
-              <Input value={email} onChange={(e)=>{setEmail(e.target.value)}} id="email" name="email" placeholder="Enter Email"/>
+              <Input value={email} onChange={(e)=>{setEmail(e.target.value); if(validationErrors.email){ validationErrors.email=""; }}} id="email" name="email" placeholder="Enter Email"/>
+              { validationErrors.email && <InputError error={validationErrors.email}/>}
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="username-1">Password</Label>
-              <Input value={password} onChange={(e)=>{setPassword(e.target.value)}} id="username-1" name="username" placeholder="Enter Password"/>
+             <div className="grid gap-3">
+              <Label htmlFor="password">Password</Label>
+              <Input value={password} onChange={(e)=>{setPassword(e.target.value); if(validationErrors.password){ validationErrors.password=""; } }} id="password" name="password" placeholder="Enter Password"/>
+              { validationErrors.password && <InputError error={validationErrors.password}/>}
             </div>
 
           </div>
           <DialogFooter>
-            <Button onClick={()=>{ setOpenLoginPage(false)}} variant="outline">Cancel</Button>
-            <Button onClick={handleUserLogin}>Login</Button>
+            <Button disabled={isUserLoading} onClick={handleUserLogin}>Login</Button>
           </DialogFooter>
         </DialogContent>
       </form>
-      <div>{ JSON.stringify(user)}</div>
-      <div>{ JSON.stringify(isAuthenticated)}</div>
-      <div>{ JSON.stringify(isUserLoading)}</div>
-      <div>{ JSON.stringify(errors)}</div>
     </Dialog>
   )
 }

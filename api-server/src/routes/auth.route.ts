@@ -9,7 +9,6 @@ const router = Router();
 router.post(
     "/login", 
     validate( allValidators.authlogin), 
-    authenticate,
     authController.login
 );
 
@@ -19,6 +18,13 @@ router.post(
     authenticate,
     authController.logout
 );
+
+router.get(
+    "/authenticate-token",
+    authenticate,
+    authController.RefreshAuth
+
+)
 
 export default router;
 

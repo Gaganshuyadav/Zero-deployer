@@ -5,15 +5,16 @@ class AllValidators{
     public authlogin = z.object({
         body: z.object({
             email: z.string().email().min(1, "Email is not provided"),
-            password: z.string().min(1, "Password should not be empty")
+            password: z.string().min(4, "Password should not be empty")
         })
     })
 
     public authRegister = z.object({
         body: z.object({
             firstName: z.string().min(2),
+            lastName: z.string().optional(),
             email: z.string().email(),
-            password: z.string().min(8)
+            password: z.string().min(4)
         })
     })
 

@@ -13,11 +13,6 @@ const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
-        setLoginAuth: ( state)=>{
-
-            state.isUserLoading = false;
-            state.isAuthenticated = false;
-        }
     },
     extraReducers: ( builder)=>{
 
@@ -28,7 +23,7 @@ const userSlice = createSlice({
         builder.addCase( userThunk.userLogin.fulfilled, ( state, action:any)=>{
             state.isUserLoading = false;
             state.isAuthenticated = true;
-            state.user = action.payload.user;
+            state.user = action.payload;
         }),
         builder.addCase( userThunk.userLogin.rejected, ( state, action:any)=>{
             state.isUserLoading = false;
@@ -39,13 +34,53 @@ const userSlice = createSlice({
                 state.errors.push(action.payload?.message);
             }
         
+        }),
+
+
+
+        //New user
+        builder.addCase( userThunk.userRegister.pending, ( state)=>{
+            state.isUserLoading = true;
+        }),
+        builder.addCase( userThunk.userRegister.fulfilled, ( state, action:any)=>{
+            state.isUserLoading = false;
+            state.isAuthenticated = true;
+            state.user = action.payload;
+
+        }),
+        builder.addCase( userThunk.userRegister.rejected, ( state, action:any)=>{
+            state.isUserLoading = false;
+            if(action.payload?.errors && action.payload?.errors.length>0){
+                state.errors.push(action.payload?.errors[0]);
+            }
+            else{
+                state.errors.push(action.payload?.message);
+            }
+        
+        })
+
+
+
+
+        // refresh User
+        builder.addCase( userThunk.refreshAuth.pending, ( state)=>{
+            state.isUserLoading = true;
+        }),
+        builder.addCase( userThunk.refreshAuth.fulfilled, ( state, action:any)=>{
+            state.isUserLoading = false;
+            state.isAuthenticated = true;
+            state.user = action.payload;
+        }),
+        builder.addCase( userThunk.refreshAuth.rejected, ( state)=>{
+            state.isUserLoading = false;
+        
         })
 
     }
 })
 
 
-export const { setLoginAuth} = userSlice.actions;
+// export const { } = userSlice.actions;
 
 export default userSlice.reducer;
 

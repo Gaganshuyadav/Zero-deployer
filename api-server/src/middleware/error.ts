@@ -5,17 +5,17 @@ import type { NextFunction, Response, Request } from "express";
 
 const errorMiddleware = ( err:MyErrorHandler|Error, req:Request, res:Response, next:NextFunction) =>{
 
-    let message, statusCode;
+    let message, statusCode=500;
     if( err instanceof MyErrorHandler){
         // This is an expression, not a block
-        ({ message="Internal Server Error", statusCode=500} = err);
+        ({ message="Internal Server Error", statusCode} = err);
     }
     else{
         ({ message="Internal Server Error"} = err);
     }
 
-    return res.json({
-        error: false,
+    return res.status(statusCode).json({
+        error: true,
         message: message
     })
 }

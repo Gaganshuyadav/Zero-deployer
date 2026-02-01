@@ -19,10 +19,17 @@ class UserService{
                 lastName: body.lastName,
                 email: body.email,
                 password: hashedPassword
+            },
+            select:{
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                userRole: true,
+                createdAt: true,
+                updatedAt: true
             }
         })
-
-        console.log("::::: ", newUser);
 
         return newUser;
     }
