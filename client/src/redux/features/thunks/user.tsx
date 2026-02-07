@@ -63,11 +63,7 @@ class UserThunk{
                 }
             );
 
-            console.log("Ressssssssssss ", data);
-
             const { user} = data;
-
-            console.log("&&&&&&&&&&&& ",user)
             return user;
         }
         catch(err:any){

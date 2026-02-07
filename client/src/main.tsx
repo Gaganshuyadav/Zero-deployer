@@ -5,12 +5,15 @@ import { BrowserRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import store from './redux/store.tsx'
 import { Toaster } from 'sonner'
+import { ThemeProvider } from './context/theme-context/ThemeProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
-    <Provider store={store}>
-        <App />
-        <Toaster/>
-    </Provider>
+        <ThemeProvider>
+            <Provider store={store}>
+                <App />
+                <Toaster/>
+            </Provider>
+        </ThemeProvider>
     </BrowserRouter>
 )

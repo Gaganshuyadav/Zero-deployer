@@ -77,10 +77,10 @@ function LoginPage() {
     }
   } , [ errors]);
 
-  //navigation
-  // if(isAuthenticated){
-  //   navigate("/");
-  // }
+  // navigation
+  if(isAuthenticated){
+    navigate("/");
+  }
   
 
   return (
