@@ -1,7 +1,7 @@
 import { userThunk } from "@/redux/features/thunks/user";
 import type { AppDispatch } from "@/redux/store";
 import type { UserStateType } from "@/types/redux.type";
-import { use, useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useDispatch, useSelector} from "react-redux";
 import { Navigate } from "react-router";
 

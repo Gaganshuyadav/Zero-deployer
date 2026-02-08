@@ -1,9 +1,9 @@
-import ProjectMainLayout from "@/components/layout/ProjectMainLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const ExampleComponent = () =>{
 
     return(
-        <div>
+        <div className="bg-background text-foreground">
             <div>I am ironman</div>
             <div>i am burning with glorious purpose</div>
             <div>I am ironman</div>
@@ -78,4 +78,4 @@ const ExampleComponent = () =>{
     )
 }
 
-export default ProjectMainLayout()(ExampleComponent);
+export default DashboardLayout()(ExampleComponent);

@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import Header from "./Header";
+import Header from "./header/DashboardHeader";
 
 
 const AppLayout = () => {
@@ -9,7 +9,7 @@ const AppLayout = () => {
         return (props:any) => {
 
             return (
-                <div className="min-h-screen bg-slate-50 text-slate-900">
+                <div className="min-h-screen bg-slate-50 text-slate-900 bg-background text-foreground">
                     {/* Header */}
                     <Header/>
 

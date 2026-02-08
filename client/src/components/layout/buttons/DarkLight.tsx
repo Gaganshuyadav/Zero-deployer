@@ -7,7 +7,7 @@ const DarkLightSwitch = () => {
     const { theme, toggleTheme} = useContext(ThemeContext);
 
   return (
-    <StyledWrapper className='border-2'>
+    <StyledWrapper className=''>
       <label className="switch">
             <input type="checkbox" checked={theme==="light"} onChange={()=>{toggleTheme()}}/>
         <span className="slider" />
@@ -35,7 +35,7 @@ const StyledWrapper = styled.div`
 
   /* The slider */
   .slider {
-    --background: #28096b;
+    --background: #142068;
     position: absolute;
     cursor: pointer;
     top: 0;
