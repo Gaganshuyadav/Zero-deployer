@@ -50,11 +50,14 @@ model Project {
 }
 
 
+
 model Deployment {
   id String @id @default(uuid())
   project Project @relation( fields: [project_id], references: [id], onDelete: Cascade)
   project_id String
   status DeploymentStatusEnum
+  branch   String
+  // commitId String
   createdAt DateTime @map("created_at") @default(now())
   updatedAt DateTime @map("updated_at") @updatedAt
 }
