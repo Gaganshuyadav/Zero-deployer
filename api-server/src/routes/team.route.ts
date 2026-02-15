@@ -11,15 +11,15 @@ router.post(
     userController.createNewUser
 );
 
-// router.get(
-//     "/:id", 
-//     userController.getUser
-// );
+router.get(
+    "/:id", 
+    userController
+);
 
-// router.get(
-//     "/users", 
-//     userController.getAllUsers
-// );
+router.get(
+    "/deployments", 
+    userController.getAllUsers
+);
 
 export default router;
 

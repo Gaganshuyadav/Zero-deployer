@@ -40,7 +40,6 @@ model Project {
   team Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
   team_id String
   name String
-  createdBy String @map("created_by")
   gitUrl String @map("git_url")
   subDomain String @map("sub_domain")
   customDomain String @map("custom_domain")

@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ProjectType } from "../generated/prisma/enums.js";
 
 class AllValidators{
 
@@ -15,6 +16,13 @@ class AllValidators{
             lastName: z.string().optional(),
             email: z.string().email(),
             password: z.string().min(4)
+        })
+    })
+
+    public newTeamCreate = z.object({
+        body: z.object({
+          name: z.string().min(1),
+          type: ProjectType
         })
     })
 

@@ -4,12 +4,13 @@ import type { User } from "../generated/prisma/client.js";
 import { authService } from "../services/auth.service.js";
 import { userService } from "../services/user.service.js";
 import { MyErrorHandler } from "../middleware/error.js";
+import type { createNewUserBody } from "../types/req-body/user.js";
 
 class UserController{
 
     public createNewUser = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
         
-        const userBody:User = req.body;
+        const userBody:createNewUserBody = req.body;
 
         const { email, password} = userBody;
 
@@ -32,14 +33,14 @@ class UserController{
 
     })
 
-    public getUser = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
-        return res.json({ error: false})
+    // public getUser = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
+    //     return res.json({ error: false})
 
-    }) 
+    // }) 
 
-    public getAllUsers = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
-        return res.json({ error: false})
-    })
+    // public getAllUsers = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
+    //     return res.json({ error: false})
+    // })
 }
 
 const userController = new UserController();

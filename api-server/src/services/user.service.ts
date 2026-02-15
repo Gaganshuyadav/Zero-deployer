@@ -5,10 +5,11 @@ import type { User } from "../generated/prisma/client.js";
 import bcrypt from "bcrypt";
 import { tr } from "zod/locales";
 import type { GetUserByEmail } from "../types/prismaTypes/user.js";
+import type { createNewUserBody } from "../types/req-body/user.js";
 
 class UserService{
 
-    public createUser = async ( body:User):Promise<any> =>{
+    public createUser = async ( body:createNewUserBody):Promise<any> =>{
 
         // convert password into hashed password
         const hashedPassword = await this.convertPasswordIntoHashedPassword( body.password);
@@ -16,7 +17,7 @@ class UserService{
         const newUser = await prisma.user.create({
             data: {
                 firstName: body.firstName,
-                lastName: body.lastName,
+                lastName: body.lastName ? body.lastName : "",
                 email: body.email,
                 password: hashedPassword
             },
