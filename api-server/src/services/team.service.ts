@@ -1,5 +1,6 @@
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
 import type { Team } from "../generated/prisma/client.js";
+import type { TeamFindManyArgs } from "../generated/prisma/models.js";
 import type { CreateNewTeamBody } from "../types/req-body/team.js";
 
 
@@ -71,7 +72,7 @@ class TeamService{
         return findTeam ? true : false;
     }
 
-    public  getAllTeams =  async ( page?:number, limit?:number) =>{
+    public  getAllTeams =  async ( query?:TeamFindManyArgs ,page?:number, limit?:number) =>{
 
         let skip, paginationQuery;
         if( page && limit){
@@ -88,11 +89,13 @@ class TeamService{
 
         if( paginationQuery){
             allTeamsData = await prisma.team.findMany({
-                ...paginationQuery
+                ...paginationQuery,
+                ...query
             })
         }
         else{
             allTeamsData = await prisma.team.findMany({
+                ...query
             })
         }
 

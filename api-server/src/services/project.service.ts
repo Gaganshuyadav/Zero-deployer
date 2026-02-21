@@ -11,8 +11,8 @@ class ProjectService{
                 name: body.name,
                 team_id: body.team_id,
                 gitUrl: body.gitUrl,
-                subDomain: "https://custom-domain-1.vercel.com",
-                customDomain: "https://custom-domain-2.vercel.com"
+                subDomain: body.subDomain,
+                customDomain: body.customDomain
             }
         })
 

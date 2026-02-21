@@ -2,6 +2,8 @@ import { Router } from "express";
 import auth from "./auth.route.js";
 import user from "./user.route.js";
 import { authenticate } from "../middleware/auth.js";
+import team from "./team.route.js";
+import project from "./project.route.js";
 
 const router = Router();
 
@@ -16,8 +18,10 @@ router.post('/', authenticate, (req, res) => {
     res.send('Everything is good here 💪');
   });
 
-router.use("/auth",auth);
+router.use("/auth", auth);
 router.use("/user", user);
+router.use("/team", team);
+router.use("/project", project);
 
 
 export default router;

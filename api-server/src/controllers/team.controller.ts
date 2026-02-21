@@ -1,10 +1,10 @@
 import type { NextFunction, Response, Request } from "express";
 import catchAsyncErrors from "../middleware/catch-async.js";
 import { MyErrorHandler } from "../middleware/error.js";
-import type { Deployment } from "../generated/prisma/client.js";
 import { teamService } from "../services/team.service.js";
 import type { createNewUserBody } from "../types/req-body/user.js";
 import type { CreateNewTeamBody } from "../types/req-body/team.js";
+import type { TeamFindManyArgs } from "../generated/prisma/models.js";
 
 class TeamController{
 
@@ -25,7 +25,7 @@ class TeamController{
 
         const { id} = req.params;
 
-        if(id){ throw new MyErrorHandler("Team Id is not provided", 400);}
+        if(!id){ throw new MyErrorHandler("Team Id is not provided", 400);}
 
         const isTeamExist = await teamService.IsTeamExist(id as string);
 
@@ -42,7 +42,17 @@ class TeamController{
 
     public getAllTeams = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
 
-        const allTeams = await teamService.getAllTeams();
+        const userId = req.user?.id;
+
+        const { deploymentId} = req.body;
+
+        const query:TeamFindManyArgs = { where: user_id: userId};
+        query.where.user_id = userId as string;
+
+
+        // if( )
+
+        const allTeams = await teamService.getAllTeams( query);
 
         return res.json({ 
             error: false,
