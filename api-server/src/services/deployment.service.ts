@@ -1,31 +1,41 @@
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
-import type { Deployment, Project} from "../generated/prisma/client.js";
-import type { DeploymentWhereInput, ProjectWhereInput, TeamWhereInput } from "../generated/prisma/models.js";
-
+import type { DeploymentFindManyArgs, DeploymentSelect } from "../generated/prisma/models.js";
+import type { CreateNewDeploymentBody } from "../types/req-body/deployment.js";
 
 class DeploymentService{
 
-    public  createNewDeployment = async ( body:any):Promise<any> =>{
+    public  startNewDeployment = async ( body:CreateNewDeploymentBody):Promise<any> =>{
 
         const newDeployment = await prisma.deployment.create({
             data: {
-                status: "QUEUED",
-                branch: body.branch || "main",
-                project_id: body.project_id
+                project_id: body.project_id,
+                status: body.status,
+                branch: body.branch
             }
         })
 
         return newDeployment;
     }
 
-    public  getDeploymentById = async ( deploymentId:string)=>{
+    public  getDeploymentById = async ( deploymentId:string, selectQuery:DeploymentSelect)=>{
+        
+        const getDeploymentDetail = await prisma.deployment.findUnique({
+            where: {
+                id: deploymentId
+            },
+            select: {
+                ...selectQuery
+            }
+        })
 
-        return await prisma.deployment.findUnique({ where: { id: deploymentId}});
+        return getDeploymentDetail;
     }
 
-    
+    public isDeploymentExist = async ( deploymentId: string):Promise<{ id:string} | null> =>{
+        return await prisma.deployment.findUnique({ where: { id: deploymentId}, select: { id: true}});
+    }
 
-    public  getAllDeploymentByUserIdTeamIdDeploymentId = async ( userId: string, teamId: string, deploymentId:string, page:number, limit:number) =>{
+    public  getAllDeployments = async ( query:DeploymentFindManyArgs, page?:number, limit?:number) =>{
 
         let skip, paginationQuery;
         if( page && limit){
@@ -34,56 +44,24 @@ class DeploymentService{
             paginationQuery = {
                 skip: skip,
                 take: limit
-            }
-            
+            }   
         }
 
-        // main query
-        let whereQuery:DeploymentWhereInput = {};
-        
-        let teamFilter:TeamWhereInput = {};
-        let projectFilter:ProjectWhereInput = {};
-
-        if( deploymentId){
-            whereQuery.id = deploymentId;
-        }
-
-        if( teamId){
-            projectFilter.team_id = teamId;
-            whereQuery.project = projectFilter;
-        }
-
-        if( userId){
-            teamFilter.user_id = userId;
-            projectFilter.team = teamFilter;
-            whereQuery.project = projectFilter;
-        }
-
-
-        let teamsData;
+        let allDeploymentsData;
 
         if( paginationQuery){
-            teamsData = await prisma.deployment.findMany({
-                where: {
-                    ...whereQuery
-                },
-                ...paginationQuery
+            allDeploymentsData = await prisma.deployment.findMany({
+                ...paginationQuery,
+                ...query
             })
         }
         else{
-            teamsData = await prisma.deployment.findMany({
-                where:{
-                    ...whereQuery
-                }
+            allDeploymentsData = await prisma.deployment.findMany({
+                ...query
             })
         }
 
-        return teamsData;
-
-    }
-    
-    public  getAllDeployments =  async ( query:any) =>{
-        return await prisma.deployment.findMany(query);
+        return allDeploymentsData;
     }
 
 

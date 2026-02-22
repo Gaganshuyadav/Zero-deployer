@@ -13,18 +13,19 @@ router.post(
     projectController.createNewProject
 );
 
-// router.get(
-//     "/:id", 
-//     authenticate,
-//     validate( allValidators.getTeamById),
-//     teamController.getTeam
-// );
+router.get(
+    "/projectDetails/:id", 
+    authenticate,
+    validate( allValidators.getProjectById),
+    projectController.getProjectDetails
+);
 
-// router.get(
-//     "/", 
-//     authenticate,
-//     teamController.getAllTeams
-// );
+router.post(
+    "/", 
+    authenticate,
+    validate( allValidators.getAllProject),
+    projectController.getAllProjects
+);
 
 export default router;
 

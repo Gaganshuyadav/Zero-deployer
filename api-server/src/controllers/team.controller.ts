@@ -44,15 +44,27 @@ class TeamController{
 
         const userId = req.user?.id;
 
-        const { deploymentId} = req.body;
+        const { isProject=false } = req.body ?? {};
+        
 
-        const query:TeamFindManyArgs = { where: user_id: userId};
-        query.where.user_id = userId as string;
+        const query:TeamFindManyArgs = { 
+            where: { user_id: userId as string}, 
+            select: {
+                id: true,
+                name: true,
+                type: true,
+                createdAt: true,
+                updatedAt: true,
+                user_id: true
+            }
+        };
 
+        //select
+        if(isProject && query.select){
+            query.select.project = true;
+        }
 
-        // if( )
-
-        const allTeams = await teamService.getAllTeams( query);
+        const allTeams = await teamService.getAllTeams(query);
 
         return res.json({ 
             error: false,

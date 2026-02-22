@@ -2,6 +2,7 @@ import type { NextFunction, Response, Request } from "express";
 import catchAsyncErrors from "../middleware/catch-async.js";
 import { MyErrorHandler } from "../middleware/error.js";
 import { projectService } from "../services/project.service.js";
+import type { ProjectFindManyArgs, ProjectSelect} from "../generated/prisma/models.js";
 
 class ProjectController{
 
@@ -22,32 +23,65 @@ class ProjectController{
 
         const { id} = req.params;
 
-        if(!id){ throw new MyErrorHandler("Team Id is not provided", 400);}
+        if(!id){ throw new MyErrorHandler("Project Id is not provided", 400);}
 
-        // const isTeamExist = await projectService.IsTeamExist(id as string);
+        const isProjectExist = await projectService.isProjectExist(id as string);
 
-        // if(!isTeamExist){ throw new MyErrorHandler("Team is not Exist for this given Id",400)};
+        if(!isProjectExist){ throw new MyErrorHandler("Project is not Exist for this given Id",400)};
 
-        // const findTeam = await teamService.getTeamById( id as string );
+        // select
+        const selectQuery:ProjectSelect = {
+            id: true,
+            team_id: true,
+            name: true,
+            gitUrl: true,
+            subDomain: true,
+            customDomain: true,
+            createdAt: true,
+            updatedAt: true
+        };
+
+        const getProject = await projectService.getProjectById(id, selectQuery)
+
 
         return res.json({ 
             error: false,
-            // team: findTeam
+            project: getProject
         })
 
     }) 
 
     public getAllProjects = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
 
-        // const allTeams = await teamService.getAllTeams({
-        //     where: {
-        //         user_id: userId as string
-        //     }
-        // });
+        const userId = req?.user?.id;
+        const { isDeployment=false, teamId }  = req.body ?? {};
+
+        const query:ProjectFindManyArgs = { 
+            where: {
+                ...( teamId && { team_id: teamId}),
+                team: {
+                    user_id: userId as string
+                }
+            },
+            select: {
+                id: true,
+                team_id : true,
+                name: true,
+                gitUrl: true,
+                subDomain: true,
+                customDomain: true,
+                createdAt: true,
+                updatedAt: true,
+                ...( isDeployment && { deployment: true})
+            }
+        };
+  
+
+        const allTeams = await projectService.getAllProjects( query);
 
         return res.json({ 
             error: false,
-            // teams: allTeams
+            teams: allTeams
         });
     })
 

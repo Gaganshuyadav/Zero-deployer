@@ -1,10 +1,11 @@
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
 import type { Project} from "../generated/prisma/client.js";
-import type { ProjectWhereInput, TeamWhereInput } from "../generated/prisma/models.js";
+import type { ProjectFindManyArgs, ProjectSelect, ProjectWhereInput, TeamWhereInput } from "../generated/prisma/models.js";
+import type { CreateNewProjectBody } from "../types/req-body/project.js";
 
 class ProjectService{
 
-    public  createNewProject = async ( body:Project):Promise<any> =>{
+    public  createNewProject = async ( body:CreateNewProjectBody):Promise<any> =>{
 
         const newProject = await prisma.project.create({
             data: {
@@ -19,9 +20,23 @@ class ProjectService{
         return newProject;
     }
 
-    public  getProjectById = async ( projectId:string)=>{
 
-        return await prisma.project.findUnique({ where: { id: projectId}});
+    public isProjectExist = async ( projectId: string):Promise<{ id:string} | null> =>{
+        return await prisma.project.findUnique({ where: { id: projectId}, select: { id: true}});
+    }
+
+    public  getProjectById = async ( deploymentId:string, selectQuery:ProjectSelect)=>{
+            
+        const getProjectDetail = await prisma.project.findUnique({
+            where: {
+                id: deploymentId
+            },
+            // select: {
+            //     ...selectQuery
+            // }
+        })
+
+        return getProjectDetail;
     }
 
     
@@ -76,7 +91,7 @@ class ProjectService{
 
     }
 
-    public  getAllProjects = async ( page:number, limit:number) =>{
+    public  getAllProjects = async ( query:ProjectFindManyArgs, page?:number, limit?:number) =>{
 
         let skip, paginationQuery;
         if( page && limit){
@@ -92,11 +107,14 @@ class ProjectService{
 
         if( paginationQuery){
             allProjectsData = await prisma.project.findMany({
-                ...paginationQuery
+                ...paginationQuery,
+                ...query
             })
         }
         else{
-            allProjectsData = await prisma.project.findMany({})
+            allProjectsData = await prisma.project.findMany({
+                ...query
+            })
         }
 
         return allProjectsData;

@@ -14,15 +14,16 @@ router.post(
 );
 
 router.get(
-    "/:id", 
+    "/teamDetails/:id", 
     authenticate,
     validate( allValidators.getTeamById),
     teamController.getTeam
 );
 
-router.get(
+router.post(
     "/", 
     authenticate,
+    validate( allValidators.getAllTeams),
     teamController.getAllTeams
 );
 

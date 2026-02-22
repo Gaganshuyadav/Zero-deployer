@@ -1,5 +1,4 @@
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
-import type { Team } from "../generated/prisma/client.js";
 import type { TeamFindManyArgs } from "../generated/prisma/models.js";
 import type { CreateNewTeamBody } from "../types/req-body/team.js";
 

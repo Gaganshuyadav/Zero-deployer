@@ -56,6 +56,19 @@ class AllValidators{
         )
       })
     })
+
+    public getAllTeams = z.object({
+        body: z.object({
+            isProject: z.boolean().optional()
+        }).optional()
+    })
+
+    public getAllProject = z.object({
+        body: z.object({
+            isDeployment: z.boolean().optional(),
+            teamId: z.string().optional()
+        }).optional()
+    })
     
     
     public getTeamById = z.object({
@@ -64,6 +77,15 @@ class AllValidators{
           error: "Team ID is required"
         })
         .min(1, "Team ID is required")
+      })
+    })
+
+    public getProjectById = z.object({
+      params: z.object({
+        id: z.string({
+          error: "Project ID is required"
+        })
+        .min(1, "Project ID is required")
       })
     })
     
