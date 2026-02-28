@@ -5,11 +5,11 @@ import type { User } from "../generated/prisma/client.js";
 import bcrypt from "bcrypt";
 import { tr } from "zod/locales";
 import type { GetUserByEmail } from "../types/prismaTypes/user.js";
-import type { createNewUserBody } from "../types/req-body/user.js";
+import type { CreateNewUserReqBody } from "../types/reqTypes/user.js";
 
 class UserService{
 
-    public createUser = async ( body:createNewUserBody):Promise<any> =>{
+    public createUser = async ( body:CreateNewUserReqBody):Promise<any> =>{
 
         // convert password into hashed password
         const hashedPassword = await this.convertPasswordIntoHashedPassword( body.password);

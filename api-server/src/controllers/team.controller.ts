@@ -2,15 +2,14 @@ import type { NextFunction, Response, Request } from "express";
 import catchAsyncErrors from "../middleware/catch-async.js";
 import { MyErrorHandler } from "../middleware/error.js";
 import { teamService } from "../services/team.service.js";
-import type { createNewUserBody } from "../types/req-body/user.js";
-import type { CreateNewTeamBody } from "../types/req-body/team.js";
+import type { CreateNewTeamReqBody } from "../types/reqTypes/team.js";
 import type { TeamFindManyArgs } from "../generated/prisma/models.js";
 
 class TeamController{
 
     public createNewTeam = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
         
-        const body:CreateNewTeamBody = req.body;
+        const body:CreateNewTeamReqBody = req.body;
 
         const newTeam = await teamService.createNewTeam( body, req.user?.id as string);
         

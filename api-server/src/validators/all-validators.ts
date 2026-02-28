@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { ProjectType } from "../generated/prisma/enums.js";
+import { DeploymentStatusEnum, ProjectType } from "../generated/prisma/enums.js";
 
 class AllValidators{
 
@@ -51,7 +51,7 @@ class AllValidators{
         .min(1, "Team name is required"),
     
         type: z.enum(
-          Object.values(ProjectType) as [string, ...string[]],
+          Object.values(ProjectType),
           { message: "Invalid project type" }
         )
       })
@@ -115,9 +115,54 @@ class AllValidators{
         customDomain: z.string({
           error: "Custom domain is required"
         })
-        .min(1, "Custom domain is required")
+        .min(1, "Custom domain is required"),
+
+        branch: z.string({
+          error: "Branch name is required"
+        })
+        .min(1, "Branch name is required")
+
       })
     })
+
+
+    public createNewDeployment = z.object({
+      body: z.object({
+        project_id: z.string({
+          error: "project id is required"
+        })
+        .min(1, "project id is required"),
+    
+        status: z.enum(
+            Object.values(DeploymentStatusEnum),
+            { message: "Invalid status type"}
+        ),
+
+        branch: z.string({
+          error: "branch is required"
+        })
+        .min(1, "branch is required"),
+
+      })
+    })
+
+    public getAllDeployments = z.object({
+        body: z.object({
+            projectId: z.string().optional(),
+            teamId: z.string().optional()
+        }).optional()
+    })
+
+    public getDeploymentById = z.object({
+      params: z.object({
+        id: z.string({
+          error: "Deployment ID is required"
+        })
+        .min(1, "Deployment ID is required")
+      })
+    })
+
+    
 
 }
 

@@ -1,11 +1,11 @@
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
 import type { TeamFindManyArgs } from "../generated/prisma/models.js";
-import type { CreateNewTeamBody } from "../types/req-body/team.js";
+import type { CreateNewTeamReqBody } from "../types/reqTypes/team.js";
 
 
 class TeamService{
 
-    public createNewTeam = async ( body:CreateNewTeamBody, user_id:string):Promise<any> =>{
+    public createNewTeam = async ( body:CreateNewTeamReqBody, user_id:string):Promise<any> =>{
 
         const newTeam = await prisma.team.create({
             data: {

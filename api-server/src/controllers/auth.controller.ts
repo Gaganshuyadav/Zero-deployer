@@ -3,13 +3,13 @@ import catchAsyncErrors from "../middleware/catch-async.js";
 import { userService } from "../services/user.service.js";
 import { MyErrorHandler } from "../middleware/error.js";
 import { authService } from "../services/auth.service.js";
-import type { UserLoginBody } from "../types/req-body/user.js";
+import type { CreateNewUserReqBody } from "../types/reqTypes/user.js";
 
 class AuthController{
 
     public login = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
 
-        const { email, password}:UserLoginBody = req.body;
+        const { email, password}:CreateNewUserReqBody = req.body;
 
         //find User
         const findUser = await userService.verifyUserExist(email);

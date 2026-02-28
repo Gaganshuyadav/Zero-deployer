@@ -1,10 +1,10 @@
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
 import type { DeploymentFindManyArgs, DeploymentSelect } from "../generated/prisma/models.js";
-import type { CreateNewDeploymentBody } from "../types/req-body/deployment.js";
+import type { CreateNewDeploymentReqBody } from "../types/reqTypes/deployment.js";
 
 class DeploymentService{
 
-    public  startNewDeployment = async ( body:CreateNewDeploymentBody):Promise<any> =>{
+    public  startNewDeployment = async ( body:CreateNewDeploymentReqBody):Promise<any> =>{
 
         const newDeployment = await prisma.deployment.create({
             data: {

@@ -1,7 +1,7 @@
 import { DeleteMessageCommand, GetQueueAttributesCommand, ReceiveMessageCommand, SendMessageCommand, SQS, type ReceiveMessageCommandOutput} from "@aws-sdk/client-sqs";
 import { ecsService } from "./ecsService.js";
 import type { AssignPublicIp, AwsVpcConfiguration, LaunchType } from "@aws-sdk/client-ecs";
-import type { SqsDeployMessage } from "../types/interfaces/message.js";
+import type { SqsDeployMessage } from "../types/interfaces/sqsMessage.js";
 import { optionalEnv, strictEnvs } from "../config/envConfig.js";
 
 const sqsClient = new SQS({
@@ -15,7 +15,7 @@ const sqsClient = new SQS({
 class SQS_Service{
 
     //producer
-    public async sendMessage( message:any){
+    public async sendMessage( message:SqsDeployMessage){
 
         if( optionalEnv.AWS_SQS_SERVICE_EXIST!=='1'){ console.log("send Message in local"); return;}
 

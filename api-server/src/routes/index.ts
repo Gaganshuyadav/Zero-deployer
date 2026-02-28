@@ -4,6 +4,7 @@ import user from "./user.route.js";
 import { authenticate } from "../middleware/auth.js";
 import team from "./team.route.js";
 import project from "./project.route.js";
+import deployment from "./deployment.route.js";
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.use("/auth", auth);
 router.use("/user", user);
 router.use("/team", team);
 router.use("/project", project);
+router.use("/deployment", deployment);
 
 
 export default router;

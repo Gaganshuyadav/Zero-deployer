@@ -1,12 +1,15 @@
+import { sqsService } from "../aws/sqsService.js";
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
 import type { Project} from "../generated/prisma/client.js";
 import type { ProjectFindManyArgs, ProjectSelect, ProjectWhereInput, TeamWhereInput } from "../generated/prisma/models.js";
-import type { CreateNewProjectBody } from "../types/req-body/project.js";
+import type { CreateNewProjectReqBody } from "../types/reqTypes/project.js";
+import { deploymentService } from "./deployment.service.js";
 
 class ProjectService{
 
-    public  createNewProject = async ( body:CreateNewProjectBody):Promise<any> =>{
+    public  createNewProject = async ( body:CreateNewProjectReqBody):Promise<Project> =>{
 
+        // create new project
         const newProject = await prisma.project.create({
             data: {
                 name: body.name,
@@ -16,6 +19,20 @@ class ProjectService{
                 customDomain: body.customDomain
             }
         })
+
+
+        // create new deloyment 
+        // const newDep = await deploymentService.startNewDeployment({
+        //     project_id: newProject.id,
+        //     status: "QUEUED",
+        //     branch: newProjec
+        // })
+
+
+        // // send message into SQS to run ECS container and start build
+        // sqsService.sendMessage({
+        //     repoId: 
+        // }) 
 
         return newProject;
     }

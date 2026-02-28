@@ -3,18 +3,20 @@ import catchAsyncErrors from "../middleware/catch-async.js";
 import { MyErrorHandler } from "../middleware/error.js";
 import { projectService } from "../services/project.service.js";
 import type { ProjectFindManyArgs, ProjectSelect} from "../generated/prisma/models.js";
+import type { CreateNewProjectReqBody } from "../types/reqTypes/project.js";
 
 class ProjectController{
 
     public createNewProject = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
         
-        const body = req.body;
+        const body:CreateNewProjectReqBody = req.body;
 
-        const newTeam = await projectService.createNewProject( body);
+        await projectService.createNewProject( body);
+
         
         return res.json({
             error: false, 
-            user: newTeam
+            // user: newProject
         })
 
     })

@@ -3,21 +3,22 @@ import catchAsyncErrors from "../middleware/catch-async.js";
 import { MyErrorHandler } from "../middleware/error.js";
 import { deploymentService } from "../services/deployment.service.js";
 import type { DeploymentFindManyArgs, DeploymentSelect} from "../generated/prisma/models.js";
+import type { CreateNewDeploymentReqBody } from "../types/reqTypes/deployment.js";
 
 class DeploymentController{
 
-    // public startNewDeployment = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
+    public startNewDeployment = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
         
-    //     const body = req.body;
+        const body:CreateNewDeploymentReqBody = req.body;
 
-    //     const newTeam = await deploymentService.createNewDeployment( body);
+        const newDep = await deploymentService.startNewDeployment( body);
         
-    //     return res.json({
-    //         error: false, 
-    //         user: newTeam
-    //     })
+        return res.json({
+            error: false,
+            newDep
+        })
 
-    // })
+    })
 
     public getDeploymentDetails = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
 
@@ -50,39 +51,37 @@ class DeploymentController{
 
     public getAllDeployments = catchAsyncErrors( async ( req:Request, res:Response, next:NextFunction):Promise<Response|void> =>{
 
-        // const userId = req?.user?.id;
-        // const { isDeployment=false }  = req.body ?? {};
+        const userId = req?.user?.id;
+        const { projectId, teamId }  = req.body ?? {};
 
-        // // const query:DeploymentFindManyArgs = { 
-        // //     where: {
-                
-        // //     },
-        // //     select: {
-        // //         id: true,
-        // //         team_id : true,
-        // //         name: true,
-        // //         gitUrl: true,
-        // //         subDomain: true,
-        // //         customDomain: true,
-        // //         createdAt: true,
-        // //         updatedAt: true
-        // //     }
-        // // };
+        const query:DeploymentFindManyArgs = { 
+            where: {
+               project: {
+                team: {
+                    user_id: userId as string,
+                    ...( teamId && { id: teamId} )
+                },
+                ...( projectId && { id: projectId})
+               } 
+            },
+            select: {
+                id: true,
+                project_id: true,
+                status: true,
+                branch: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        };
 
-        // // if( query.select && isDeployment){
-        // //     query.select.deployment = true
-        // // }
-  
+        const allDeployments = await deploymentService.getAllDeployments( query);
 
-        // const allTeams = await deploymentService.getAllDeployments( query);
-
-        // return res.json({ 
-        //     error: false,
-        //     teams: allTeams
-        // });
+        return res.json({ 
+            error: false,
+            deployments: allDeployments
+        });
     })
 
-    public getAllDeploymentsByUser = catchAsyncErrors
 }
 
 const deploymentController = new DeploymentController();
