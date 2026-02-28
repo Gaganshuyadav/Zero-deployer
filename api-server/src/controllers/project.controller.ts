@@ -4,6 +4,7 @@ import { MyErrorHandler } from "../middleware/error.js";
 import { projectService } from "../services/project.service.js";
 import type { ProjectFindManyArgs, ProjectSelect} from "../generated/prisma/models.js";
 import type { CreateNewProjectReqBody } from "../types/reqTypes/project.js";
+import type { RequestUser } from "../types/customTypes/user.js";
 
 class ProjectController{
 
@@ -11,7 +12,7 @@ class ProjectController{
         
         const body:CreateNewProjectReqBody = req.body;
 
-        await projectService.createNewProject( body);
+        await projectService.createNewProject( { projectBody: body, userBody: req.user as RequestUser});
 
         
         return res.json({

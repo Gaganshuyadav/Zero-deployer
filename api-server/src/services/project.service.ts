@@ -2,39 +2,47 @@ import { sqsService } from "../aws/sqsService.js";
 import { prisma } from "../DB/prisma-client/PrismaClient.js";
 import type { Project} from "../generated/prisma/client.js";
 import type { ProjectFindManyArgs, ProjectSelect, ProjectWhereInput, TeamWhereInput } from "../generated/prisma/models.js";
+import type { RequestUser } from "../types/customTypes/user.js";
 import type { CreateNewProjectReqBody } from "../types/reqTypes/project.js";
 import { deploymentService } from "./deployment.service.js";
 
 class ProjectService{
 
-    public  createNewProject = async ( body:CreateNewProjectReqBody):Promise<Project> =>{
+    public  createNewProject = async ( { projectBody, userBody }:{ projectBody:CreateNewProjectReqBody, userBody:RequestUser } ):Promise<Project|void> =>{
 
         // create new project
         const newProject = await prisma.project.create({
             data: {
-                name: body.name,
-                team_id: body.team_id,
-                gitUrl: body.gitUrl,
-                subDomain: body.subDomain,
-                customDomain: body.customDomain
+                name: projectBody.name,
+                team_id: projectBody.team_id,
+                gitUrl: projectBody.gitUrl,
+                subDomain: projectBody.subDomain,
+                customDomain: projectBody.customDomain
             }
         })
 
 
         // create new deloyment 
-        // const newDep = await deploymentService.startNewDeployment({
-        //     project_id: newProject.id,
-        //     status: "QUEUED",
-        //     branch: newProjec
-        // })
-
-
-        // // send message into SQS to run ECS container and start build
-        // sqsService.sendMessage({
-        //     repoId: 
-        // }) 
+        const newDep = await deploymentService.startNewDeployment({
+            project_id: newProject.id,
+            status: "QUEUED",
+            branch: newProject.id
+        })
 
         return newProject;
+
+        // generate random repoId
+        const generatedRepoid = `${projectBody.name}-${Math.floor(Math.random()*1000000)}`;
+
+
+        // send message into SQS to run ECS container and start build for new project
+        sqsService.sendMessage({
+            repoId: generatedRepoid,
+            githubUrl: projectBody.gitUrl,
+            user_id: userBody.id,
+            project_id: newProject.id,
+            deployment_id: newDep.id
+        })
     }
 
 
