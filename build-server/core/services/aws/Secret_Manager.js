@@ -2,11 +2,7 @@ const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client
 const { produceLogs } = require("../kafka/Kafka_Log_Service");
 
 const client = new SecretsManagerClient({ 
-    region: process.env.AWS_REGION,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY ,
-        secretAccessKey: process.env.AWS_SECRET_KEY
-    }
+    region: process.env.AWS_REGION
 });
 
 exports.loadSecrets = async ()=>{
@@ -18,6 +14,7 @@ exports.loadSecrets = async ()=>{
     
     const res = await client.send(command);
     const awsSecrets = JSON.parse(res.SecretString);
+    console.log(">>>>>>>>>>>> ",awsSecrets);
     const secretsList = Object.entries(awsSecrets);   
     for( let [ key, value] of secretsList){
       process.env[key] = value;

@@ -4,17 +4,13 @@ const mime = require("mime-types");
 const { produceLogs } = require("../kafka/Kafka_Log_Service");
 
 const s3 = new S3({
-    region: process.env.AWS_REGION,
-    credentials:{
-        accessKeyId: process.env.AWS_ACCESS_KEY,
-        secretAccessKey: process.env.AWS_SECRET_KEY
-    }
+    region: process.env.AWS_REGION
 })
 
 
 exports.uploadFileToS3 = async ( fileNameKey, filePath) =>{
 
-    if(process.env.AWS_SQS_SERVICE_EXIST!=="1"){ (await produceLogs("S3 run in local","INFO")); return;}
+    if(process.env.AWS_S3_SERVICE_EXIST!=="1"){ (await produceLogs("S3 run in local","INFO")); return;}
 
     const fileContent = fs.readFileSync(filePath);
 

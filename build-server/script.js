@@ -3,30 +3,25 @@ dotenv.config();
 const { exec} = require("child_process");
 const path = require("path");
 const fs = require("fs");
-const { ensureEnv } = require("./core/utils/envChecker");
+const { initConfig_with_envChecking } = require("./core/utils/envChecker");
 const { getAllFilesPathFromFolder } = require("./core/custom_funcs/getAllFilesPath");
 const { uploadAllFilesToS3 } = require("./core/custom_funcs/uploadAllBuildFilesToS3");
 const { produceLogs } = require("./core/services/kafka/Kafka_Log_Service");
 
 
-BuiidRepo = async ()=>{
+const BuiidRepo = async ()=>{
 
-    if (process.env.AWS_SECRET_MANAGER_EXIST === "1") {
-        await loadSecrets();
-    }   
+    process.env.GITHUB_REPOSITORY_URL = "https://github.com/dumindapriyasad/todo-app.git"
+    process.env.REPO_ID = "first-Project-7-41123"
+    process.env.SERVER_USER_ID = "7bd5b3a3-b770-425b-b48d-32aa3ca54ff6"
+    process.env.SERVER_PROJECT_ID = "1962798d-dbe9-41bc-a78b-418a89e81ffb"
+    process.env.SERVER_DEPLOYMENT_ID = "338db8ce-08b0-40fc-a116-028b7d9e80bc"
 
-    //env checker
-    ensureEnv([
-        "GITHUB_REPOSITORY_URL",
-        "REPO_ID",
-        "AWS_ACCESS_KEY",
-        "AWS_SECRET_KEY",
-        "AWS_REGION",
-        "AWS_BUCKET",
-        "AWS_SECRET_MANAGER_SECRET_NAME"
-    ]);
 
-    const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git" || "https://github.com/prashantbuilds/macbook-air-m2-landing-page.git";
+    await initConfig_with_envChecking();   
+
+    // const github_repository_url = process.env.GITHUB_REPOSITORY_URL || "https://github.com/dumindapriyasad/todo-app.git" || "https://github.com/prashantbuilds/macbook-air-m2-landing-page.git";
+    const github_repository_url = process.env.GITHUB_REPOSITORY_URL;
     const repo_id = process.env.REPO_ID || `${(Math.floor(Math.random()*10000))}`;
 
     const folderPathForRepoClone = path.join(__dirname,`./cloned-repo/${repo_id}`); 
@@ -55,6 +50,11 @@ BuiidRepo = async ()=>{
 
                 await produceLogs("npm install ...","INFO");
                 const node_modules_install = exec(`npm install --prefix ${targetPath}`);
+
+                node_modules_install.stdout.on("data", async ( data)=>{
+                    await produceLogs(data,"INFO");
+                })
+
                 node_modules_install.on("close",async ()=>{
 
                     await produceLogs("Build start... ","INFO");
@@ -65,6 +65,11 @@ BuiidRepo = async ()=>{
 
 
                     const makeBuild = exec(`npm run build --prefix ${targetPath}`);
+
+                    makeBuild.stdout.on("data", async ( data)=>{
+                        await produceLogs( data, "INFO");
+                    })
+
                     makeBuild.on("close", async ()=>{
 
                         await produceLogs("build successful","INFO");
@@ -106,4 +111,6 @@ BuiidRepo = async ()=>{
 
 }
 
-BuiidRepo();
+ BuiidRepo();
+
+module.exports = { BuiidRepo};

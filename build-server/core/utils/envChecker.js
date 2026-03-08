@@ -1,7 +1,7 @@
 
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 dotenv.config();
-import { loadSecrets } from '../services/aws/Secret_Manager';
+const { loadSecrets } = require('../services/aws/Secret_Manager');
 
 const strictEnvs = {
         GITHUB_REPOSITORY_URL: process.env.GITHUB_REPOSITORY_URL,
@@ -18,13 +18,16 @@ const strictEnvs = {
 
 const optionalEnv = {
     AWS_SECRET_MANAGER_EXIST: process.env.AWS_SECRET_MANAGER_EXIST,
-    AWS_SQS_SERVICE_EXIST: process.env.AWS_SQS_SERVICE_EXIST
+    AWS_S3_SERVICE_EXIST: process.env.AWS_S3_SERVICE_EXIST,
+    IS_KAFKA_EXIST: process.env.IS_KAFKA_EXIST
 };
 
 
 
 
 const ensureEnv  = ( required=[], message="Missing environment variables: ")=>{
+
+    console.log("*************** ",required);
 
     const missing = required.filter(envName=>( !process.env[envName] || process.env[envName].trim()===""));
     if(missing.length){
@@ -37,16 +40,16 @@ const ensureEnv  = ( required=[], message="Missing environment variables: ")=>{
 
 
 // initialize config
-const initConfig = async ()=>{
+const initConfig_with_envChecking = async ()=>{
 
     if (process.env.AWS_SECRET_MANAGER_EXIST === "1") {
         await loadSecrets();
     }
 
     //env checker
-    ensureEnv(strictEnvs);
+    ensureEnv(Object.keys(strictEnvs));
 
 }
 
 
-export { strictEnvs, optionalEnv, initConfig};
+module.exports = { strictEnvs, optionalEnv, initConfig_with_envChecking};
