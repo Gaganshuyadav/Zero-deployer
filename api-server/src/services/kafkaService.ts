@@ -19,6 +19,8 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
     if( !messages || messages.length===0) return;
 
     console.log(`Batch received: topic=${topic} partition=${partition} messages=${messages.length}`);
+    let batchhh = batch;
+    console.log(batchhh)
 
     // Create rows for Clickhouse Schema --
 
@@ -26,6 +28,7 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
         let parsed=null;
         try{
             const messageValueData = message?.value?.toString();
+            console.log("message::: ", messageValueData);
             if(!messageValueData){ 
                 parsed = null;
             }
@@ -47,14 +50,19 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             source: parsed?.source || null,
             container_id: parsed?.container_id || null,
             host: parsed?.host ? parsed?.host : os.hostname(),
-            event_time: parsed?.created_at ? new Date(parsed?.created_at).toISOString() : new Date().toISOString(),
-            
-            kafka_offset: String(parsed?.offset),
+            event_time: parsed?.created_at ? new Date(parsed?.created_at).toISOString() : new Date().toISOString(),   
+            kafka_offset: String(message.offset),
             kafka_partition: batch?.partition
         }
     })
     // .filter(Boolean); // remove null rows
 
+    console.log("*******************************")
+    console.log("*******************************")
+    console.log("*******************************")
+    console.log("Rows:: ", rows);
+    console.log("*******************************")
+    console.log("*******************************")
 
 
 

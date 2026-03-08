@@ -12,12 +12,14 @@ class ProjectController{
         
         const body:CreateNewProjectReqBody = req.body;
 
-        await projectService.createNewProject( { projectBody: body, userBody: req.user as RequestUser});
+        const projectRes = await projectService.createNewProject( { projectBody: body, userBody: req.user as RequestUser});
+
 
         
         return res.json({
             error: false, 
-            // user: newProject
+            user: "New Project is Now Queued",
+            project: projectRes
         })
 
     })

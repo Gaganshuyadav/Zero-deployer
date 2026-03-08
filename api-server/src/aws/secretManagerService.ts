@@ -2,11 +2,7 @@ import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-sec
 import { optionalEnv, strictEnvs } from "../config/envConfig.js";
 
 const client = new SecretsManagerClient({ 
-    region: process.env.AWS_REGION as string,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY as string,
-        secretAccessKey: process.env.AWS_SECRET_KEY as string
-    }
+    region: process.env.AWS_REGION as string
 });
 
 class SecretManager_Service{

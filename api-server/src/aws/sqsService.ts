@@ -1,15 +1,11 @@
 import { DeleteMessageCommand, GetQueueAttributesCommand, ReceiveMessageCommand, SendMessageCommand, SQS, type ReceiveMessageCommandOutput} from "@aws-sdk/client-sqs";
 import { ecsService } from "./ecsService.js";
-import type { AssignPublicIp, AwsVpcConfiguration, LaunchType } from "@aws-sdk/client-ecs";
+import type { AssignPublicIp, AwsVpcConfiguration, LaunchType, RunTaskCommandOutput } from "@aws-sdk/client-ecs";
 import type { SqsDeployMessage } from "../types/interfaces/sqsMessage.js";
 import { optionalEnv, strictEnvs } from "../config/envConfig.js";
 
 const sqsClient = new SQS({
-    region: process.env.AWS_REGION as string,
-    credentials:{
-        accessKeyId: process.env.AWS_ACCESS_KEY as string,
-        secretAccessKey: process.env.AWS_SECRET_KEY as string
-    }
+    region: process.env.AWS_REGION as string
 });
 
 class SQS_Service{
@@ -84,8 +80,11 @@ class SQS_Service{
                                 return;
                             }
     
-                            // ECS task
-                            const ecsResponse = await ecsService.runSingleNewTask({
+                            // const ecsResponse = "";
+
+                            // ECS task.
+                            // /*
+                            const ecsResponse:RunTaskCommandOutput = await ecsService.runSingleNewTask({
                                 cluster: strictEnvs.AWS_ECS_BUILD_CLUSTER_NAME,
                                 taskDefinition: strictEnvs.AWS_ECS_BUILD_TASK_DEFINITION_NAME,
                                 launchType: strictEnvs.AWS_ECS_LAUNCH_TYPE as LaunchType,
@@ -103,22 +102,29 @@ class SQS_Service{
                                             environment: [
                                                 { name: "GITHUB_REPOSITORY_URL", value: receivedMessage.githubUrl },
                                                 { name: "REPO_ID", value: receivedMessage.repoId },
-                                                { name: "AWS_ACCESS_KEY", value: strictEnvs.AWS_ACCESS_KEY },
-                                                { name: "AWS_SECRET_KEY", value: strictEnvs.AWS_SECRET_KEY },
+                                                // { name: "AWS_ACCESS_KEY", value: strictEnvs.AWS_ACCESS_KEY },
+                                                // { name: "AWS_SECRET_KEY", value: strictEnvs.AWS_SECRET_KEY },
                                                 { name: "AWS_REGION", value: strictEnvs.AWS_REGION },
-                                                { name: "AWS_BUCKET", value: strictEnvs.AWS_BUCKET },
-                                                { name: "SERVER_USER_ID", value: `user_id_${Math.ceil((Math.random())*10000000000)}`},
-                                                { name: "SERVER_PROJECT_ID", value: `project_id_${Math.ceil((Math.random())*10000000000)}`},
-                                                { name: "SERVER_DEPLOYMENT_ID", value: `deployment_id_${Math.ceil((Math.random())*10000000000)}`}
+                                                // { name: "AWS_BUCKET", value: strictEnvs.AWS_BUCKET },
+                                                { name: "AWS_SECRET_MANAGER_SECRET_NAME", value: strictEnvs.AWS_SECRET_MANAGER_SECRET_NAME},
+                                                { name: "SERVER_USER_ID", value: receivedMessage.user_id},
+                                                { name: "SERVER_PROJECT_ID", value: receivedMessage.project_id},
+                                                { name: "SERVER_DEPLOYMENT_ID", value: receivedMessage.deployment_id },
+                                                { name: "AWS_SECRET_MANAGER_EXIST", value: "1"},
+                                                { name: "AWS_S3_SERVICE_EXIST", value: "1"},
+                                                { name: "IS_KAFKA_EXIST", value: "1"}
                                             ]
                                         }
                                     ]
                                 }
                             })
+
+                            // */
     
                             console.log("ECS Response: ",ecsResponse);
+
     
-                            //delete message from queue
+                            //delete message from queue after execution
                             await this.deleteMessage(sqsReceiveData.Messages[i]?.ReceiptHandle as string);
                         }
                     }

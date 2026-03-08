@@ -2,11 +2,7 @@ import { ECS, ListTasksCommand, RunTaskCommand, type ListClustersCommandOutput, 
 import { strictEnvs } from "../config/envConfig.js";
 
 const ecsClient = new ECS({
-    region: process.env.AWS_REGION as string,
-    credentials:{
-        accessKeyId: process.env.AWS_ACCESS_KEY as string,
-        secretAccessKey: process.env.AWS_SECRET_KEY as string
-    }
+    region: process.env.AWS_REGION as string
 })
 
 class ECS_Service{

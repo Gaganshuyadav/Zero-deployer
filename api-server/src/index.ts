@@ -59,7 +59,7 @@ shutdownSignals.forEach(signal => {
     const repoId = generateRandomId(12);
   
     // sqs receive messages to run ECS FARGATE Task
-    sqsService.sendMessage({ repoId, githubUrl});
+    // sqsService.sendMessage({ repoId, githubUrl});
   
     return res.json({ 
       status: 'queued', 
