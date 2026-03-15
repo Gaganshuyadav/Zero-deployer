@@ -22,7 +22,8 @@ exports.produceLogs = async ( logString, logLevel) =>{
                     message: logString,
                     source: "BUILD",
                     container_id: `container_id_${Math.floor(Math.random()*10000000)}`,
-                    host: os.hostname() ? os.hostname() : ""
+                    host: os.hostname() ? os.hostname() : "",
+                    created_at: new Date()
                 }
             }
         );

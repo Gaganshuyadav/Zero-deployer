@@ -2,7 +2,7 @@ import { type Consumer, type EachBatchPayload, type KafkaMessage } from "kafkajs
 import { uuid } from "zod";
 import os from "os";
 import { strictEnvs } from "../config/envConfig.js";
-import { insertChunkIntoClickhouse } from "./clickhouseService.js";
+import { clickHouseService } from "./clickhouseService.js";
 import type { ClickHouseLogEvent, KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
 import { kafkaTopicPartitionFormatKey } from "../utils/string-format-functions.js";
 
@@ -20,7 +20,7 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
 
     console.log(`Batch received: topic=${topic} partition=${partition} messages=${messages.length}`);
     let batchhh = batch;
-    console.log(batchhh)
+    // console.log(batchhh)
 
     // Create rows for Clickhouse Schema --
 
@@ -28,7 +28,7 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
         let parsed=null;
         try{
             const messageValueData = message?.value?.toString();
-            console.log("message::: ", messageValueData);
+            // console.log("message::: ", messageValueData);
             if(!messageValueData){ 
                 parsed = null;
             }
@@ -55,14 +55,16 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             kafka_partition: batch?.partition
         }
     })
+
+    
     // .filter(Boolean); // remove null rows
 
-    console.log("*******************************")
-    console.log("*******************************")
-    console.log("*******************************")
-    console.log("Rows:: ", rows);
-    console.log("*******************************")
-    console.log("*******************************")
+    // console.log("*******************************")
+    // console.log("*******************************")
+    // console.log("*******************************")
+    // console.log("Rows:: ", rows);
+    // console.log("*******************************")
+    // console.log("*******************************")
 
 
 
@@ -85,7 +87,7 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             await heartbeat();
 
             // Insert chunk to Clickhouse ( with retries) ---
-            await insertChunkIntoClickhouse(chunk);
+            await clickHouseService.insertChunkIntoClickhouse(chunk);
 
             // after successful insert, mark offsets in that chunk as resolved ---
             for( const row of chunk){

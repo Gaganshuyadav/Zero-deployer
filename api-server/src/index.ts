@@ -9,6 +9,8 @@ import { shutdownSignals } from './constants/shutdownSignals.js';
 import { shutdownState } from './states/shutdownState.js';
 import router from './routes/index.js';
 import { errorMiddleware } from './middleware/error.js';
+import { clickHouseService } from './services/clickhouseService.js';
+import { clickhouseDB } from './DB/clickHouse.db.js';
 
 
 const start = async () => {
@@ -50,24 +52,26 @@ shutdownSignals.forEach(signal => {
 });
 
 
-  app.put("/deploy", ( req, res)=>{
-    
-    const { githubUrl} = req.body;
+  app.put("/random", async( req, res)=>{
+
+    const resD = await clickhouseDB.createTableForAllLogs();
+
+    res.json({
+      error: false,
+      data: resD
+    })
   
-    if(!githubUrl) return;
   
-    const repoId = generateRandomId(12);
-  
-    // sqs receive messages to run ECS FARGATE Task
-    // sqsService.sendMessage({ repoId, githubUrl});
-  
-    return res.json({ 
-      status: 'queued', 
-      data: { 
-        repoId, 
-        url: `https://deployer/all-proj-builds/${repoId}/index.html` 
-      }
-    });
+  })
+
+  app.get("/findit", async( req, res)=>{
+
+    const resD = await clickhouseDB.findAllQuery();
+
+    res.json({
+      error: false,
+      data: resD
+    })
   
   
   })
