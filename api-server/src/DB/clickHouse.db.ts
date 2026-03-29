@@ -1,5 +1,5 @@
 import { clickhouseClient } from "../config/clickhouse.js";
-import type { KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
+import type { ClickHouseLogEvent, KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
 
 class ClickhouseDB{
 
@@ -46,9 +46,8 @@ class ClickhouseDB{
                 `
             })
 
-            console.log(res);
-
             console.log("Logs table Created Successfully");
+            return res;
     
         }
         catch(err){
@@ -56,19 +55,80 @@ class ClickhouseDB{
         }
     }
 
-    public async findAllQuery(){
+    public async findAllLogsQuery( 
+        query:{  
+            userId:string, 
+            projectId?:string, 
+            deploymentId?:string, 
+            page?:number, 
+            limit?:number, 
+            orderBy?:string
+        }
+    ){
+
+        let limit = query.limit ?? 200;
+        let page = query.page ?? 1;
+        let skip = (page-1)*limit;
+
+        const allowedOrderBy = [ "event_time"];
+        const orderBy = allowedOrderBy.includes( query.orderBy || "") ? query.orderBy : "event_time";
+
+        const conditions = [`user_id={userId:UUID}`]
+
+        if( query.projectId){
+            conditions.push(`project_id={projectId:UUID}`);
+        }
+
+        if( query.deploymentId){
+            conditions.push(`deployment_id={deploymentId:UUID}`);
+        }
+
+        const where = `WHERE ${conditions.join(" AND ")}`;
+
+
+        // SETTINGS max_block_size = 1 , preferred_block_size_bytes=1
 
         try{
             const res = await clickhouseClient.query({
-                query: "SELECT * FROM log_events",
+                query: `
+                    SELECT * FROM log_events 
+                    ${where}
+                    ORDER BY ${orderBy}
+                    LIMIT {limit:UInt32} 
+                    OFFSET {skip:UInt32} 
+                    `,
+                query_params: {
+                    userId: query.userId,
+                    projectId: query.projectId,
+                    deploymentId: query.deploymentId,
+                    limit: limit,
+                    skip: skip
+                },
                 format: `JSONEachRow`
             })
 
-            console.log(res);
+            const resData = await res.json();
+
+
+            // const resStream = res.stream();
+            // const data = resStream.on("data", ( chunk)=>{
+            //      const size = Buffer.byteLength(JSON.stringify(chunk));
+            //     console.log(" :::::::::::: ",size);
+            //     console.log("*** ", chunk);
+
+            //     return chunk;
+            // });
+
+            // return data;
+
+            // resStream.on("end", ( x)=>{
+            //     console.log("Stream End", x);
+            // });
+
 
             console.log("Find Query Run Successfully");
 
-            return res;
+            return resData;
 
         }
         catch(err){
@@ -76,19 +136,21 @@ class ClickhouseDB{
         }
     }
 
-    public async insertMultipleRows( rows:Array<KafkaMessageRawLogEvent>){
+    public async insertMultipleRows( rows:Array<ClickHouseLogEvent>){
+
+        console.log(rows)
 
         try{
-
             const res = await clickhouseClient.insert({
                 table: "log_events",
-                values: [ ...rows],
+                values: rows,
                 format: "JSONEachRow"
             })
 
-            console.log(res);
-
             console.log("Log Inserted Successfully");
+
+            return res;
+
         }
         catch(err){
             console.log("Insert Log Failed", err);
