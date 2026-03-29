@@ -4,8 +4,10 @@ import { strictEnvs } from "./envConfig.js";
 
 const clickhouseClient = createClient({
     url: strictEnvs.CLICKHOUSE_URL || "http://localhost:8123",
-    username: strictEnvs.CLICKHOUSE_USERNAME || "default",
-    password: strictEnvs.CLICKHOUSE_PASSWORD || "",
+    username: "default",
+    password: "",
+    // username: strictEnvs.CLICKHOUSE_USERNAME || "default",
+    // password: strictEnvs.CLICKHOUSE_PASSWORD || "",
     database: "default"
 })
 
