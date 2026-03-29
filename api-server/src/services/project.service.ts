@@ -27,25 +27,11 @@ class ProjectService{
             project_id: newProject.id,
             status: "QUEUED",
             branch: newProject.id
-        })
+        }, userBody);
 
-        // return newProject;
-
-        // generate random repoId
-        const generatedRepoid = `${projectBody.name.replace(" ","-")}-${Math.floor(Math.random()*1000000)}`;
-
-
-        // send message into SQS to run ECS container and start build for new project
-        sqsService.sendMessage({
-            repoId: generatedRepoid,
-            githubUrl: projectBody.gitUrl,
-            user_id: userBody.id,
-            project_id: newProject.id,
-            deployment_id: newDep.id
-        })
-
-        // return { project: newProject, deployment: newDep};
-        return { project: newProject, deployment: newDep, ecsPayload: { repoId: generatedRepoid, githubUrl: projectBody.gitUrl, user_id: userBody.id, project_id: newProject.id, deployment_id: newDep.id }};
+        return { 
+            deployment: newDep
+        }
  
 
     }
@@ -55,11 +41,11 @@ class ProjectService{
         return await prisma.project.findUnique({ where: { id: projectId}, select: { id: true}});
     }
 
-    public  getProjectById = async ( deploymentId:string, selectQuery:ProjectSelect)=>{
+    public  getProjectById = async ( projectId:string, selectQuery?:ProjectSelect)=>{
             
         const getProjectDetail = await prisma.project.findUnique({
             where: {
-                id: deploymentId
+                id: projectId
             },
             // select: {
             //     ...selectQuery

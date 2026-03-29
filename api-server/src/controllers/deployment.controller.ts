@@ -4,6 +4,8 @@ import { MyErrorHandler } from "../middleware/error.js";
 import { deploymentService } from "../services/deployment.service.js";
 import type { DeploymentFindManyArgs, DeploymentSelect} from "../generated/prisma/models.js";
 import type { CreateNewDeploymentReqBody } from "../types/reqTypes/deployment.js";
+import { projectService } from "../services/project.service.js";
+import type { RequestUser } from "../types/customTypes/user.js";
 
 class DeploymentController{
 
@@ -11,11 +13,15 @@ class DeploymentController{
         
         const body:CreateNewDeploymentReqBody = req.body;
 
-        const newDep = await deploymentService.startNewDeployment( body);
+        const isProjExisit = await projectService.isProjectExist( body.project_id);
+        if(!isProjExisit){ throw new MyErrorHandler("Project does not exist", 400);}
+
+        const newDep = await deploymentService.startNewDeployment( body, req.user as RequestUser);
         
         return res.json({
             error: false,
-            newDep
+            message: "New Deployment is Now Queued",
+            project: newDep
         })
 
     })
