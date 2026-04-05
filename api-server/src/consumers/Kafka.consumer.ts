@@ -2,6 +2,7 @@ import type { EachBatchHandler, EachMessageHandler, ConsumerRunConfig } from "ka
 import { kafkaClient } from "../config/client.kafka.js";
 import { processBatch } from "../services/kafkaService.js";
 import { shutdownState } from "../states/shutdownState.js";
+import { strictEnvs } from "../config/envConfig.js";
 
 
 type ConsumerConfig = {
@@ -16,7 +17,7 @@ type ConsumerCustomRunConfig = ConsumerRunConfig & ConsumerConfig;
 
 const consumerClient = kafkaClient.consumer(
     { 
-        groupId: "user-3"
+        groupId: strictEnvs.KAFKA_BUILD_GROUP as string
     }
 );
 

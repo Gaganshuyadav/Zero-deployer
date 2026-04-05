@@ -23,5 +23,14 @@ type KafkaMessageRawLogEvent = ClickHouseLogEvent & {
     kafka_offset: string
 }
 
+type findAllLogsQuerySchema = {
+    userId:string, 
+    projectId:string, 
+    deploymentId:string, 
+    page?:number, 
+    limit?:number, 
+    orderBy?:string
+}
 
-export type { ClickHouseLogEvent, KafkaMessageRawLogEvent};
+
+export type { ClickHouseLogEvent, KafkaMessageRawLogEvent, LogLevelEnum, SourceEnum, findAllLogsQuerySchema};

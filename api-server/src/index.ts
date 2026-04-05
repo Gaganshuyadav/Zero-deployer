@@ -9,7 +9,7 @@ import { shutdownSignals } from './constants/shutdownSignals.js';
 import { shutdownState } from './states/shutdownState.js';
 import router from './routes/index.js';
 import { errorMiddleware } from './middleware/error.js';
-import { clickHouseService } from './services/clickhouseService.js';
+import { clickHouseService } from './services/clickhouse.service.js';
 import { clickhouseDB } from './DB/clickHouse.db.js';
 
 
@@ -26,7 +26,7 @@ const start = async () => {
   //run poll checker function
   optionalEnv.AWS_SQS_SERVICE_EXIST!=='1' ? console.log("poll Checker run in local") : sqsService.ReceiveMessagePollChecker(15000);
   //run kafka consumer
-  optionalEnv.IS_KAFKA_EXIST!=='1' ? console.log("kafka Consumer run in local") : kafkaConsumer({ topics: ["build-container-logs"]});
+  optionalEnv.IS_KAFKA_EXIST!=='1' ? console.log("kafka Consumer run in local") : kafkaConsumer({ topics: [ strictEnvs.KAFKA_BUILD_TOPIC as string]});
   const port = Number(strictEnvs.PORT) || 3020;
   
 // Graceful Shutdown Process
@@ -50,65 +50,6 @@ shutdownSignals.forEach(signal => {
 
   });
 });
-
-
-  app.put("/random", async( req, res)=>{
-
-    const resD = await clickhouseDB.createTableForAllLogs();
-
-    res.json({
-      error: false,
-      data: resD
-    })
-  
-  
-  })
-
-  app.get("/findit", async( req, res)=>{
-
-    const resD = await clickhouseDB.findAllLogsQuery({
-      userId: "550e8400-e29b-41d4-a716-446655460001",
-      // projectId: "550e8400-e29b-41d4-a716-446655460002",
-      // deploymentId: "550e8400-e29b-41d4-a716-446655460003",
-      // page: 1,
-      // limit: 2
-    });
-
-
-    res.json({
-      error: false,
-      data: resD
-    })
-  
-  
-  })
-
-  app.post("/add-data", async ( req, res)=>{
-
-    const resD = await clickhouseDB.insertMultipleRows(
-      [{
-        user_id: "550e8400-e29b-41d4-a716-446655460001",
-        project_id: "550e8400-e29b-41d4-a716-446655460002",
-        deployment_id: "550e8400-e29b-41d4-a716-446655460003",
-        log_level: "INFO",
-        message: "Service started successfully",
-        source: "BUILD",
-        container_id: "container_123",
-        host: "ip-192-168-1-10",
-        // event_time: "2026-03-28T10:15:30.123",
-        event_time: (new Date().toISOString()).replace("Z",""),
-        event_id: "550e8400-e29b-41d4-a716-446655440004"
-        // kafka_partition: 2,
-        // kafka_offset: "10567"
-      }]
-    )
-
-    return res.json({
-      error: false,
-      data: resD
-    })
-
-  })
 
 
   // routes

@@ -1,9 +1,10 @@
 import { Kafka} from "kafkajs";
+import { strictEnvs } from "./envConfig.js";
 
 //create kafka client
 const kafkaClient = new Kafka({
-    clientId: "my-first-kafka-app",
-    brokers: [ "192.168.1.39:9092"]
+    clientId: strictEnvs.KAFKA_CLIENT_ID as string,
+    brokers: JSON.parse(strictEnvs.KAFKA_BROKERS_LIST || "[]")  as Array<string>
 })
 
 export { kafkaClient};

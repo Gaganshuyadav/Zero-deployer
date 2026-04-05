@@ -27,9 +27,9 @@ const strictEnvs = {
         POSTGRES_DB_URL: process.env.POSTGRES_DB_URL as string,
 
         KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
-        KAFKA_BROKERS: process.env.KAFKA_BROKERS,
-        KAFKA_TOPIC: process.env.KAFKA_TOPIC,
-        KAFKA_GROUP: process.env.KAFKA_GROUP,
+        KAFKA_BROKERS_LIST: process.env.KAFKA_BROKERS_LIST,
+        KAFKA_BUILD_TOPIC: process.env.KAFKA_BUILD_TOPIC,
+        KAFKA_BUILD_GROUP: process.env.KAFKA_BUILD_GROUP,
 
         CLICKHOUSE_URL: process.env.CLICKHOUSE_URL,
         CLICKHOUSE_USERNAME: process.env.CLICKHOUSE_USERNAME,

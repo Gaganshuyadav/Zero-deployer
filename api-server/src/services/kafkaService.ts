@@ -2,7 +2,7 @@ import { type Consumer, type EachBatchPayload, type KafkaMessage } from "kafkajs
 import { uuid } from "zod";
 import os from "os";
 import { strictEnvs } from "../config/envConfig.js";
-import { clickHouseService } from "./clickhouseService.js";
+import { clickHouseService } from "./clickhouse.service.js";
 import type { ClickHouseLogEvent, KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
 import { kafkaTopicPartitionFormatKey } from "../utils/string-format-functions.js";
 

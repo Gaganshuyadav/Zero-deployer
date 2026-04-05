@@ -57,34 +57,15 @@ class ClickhouseDB{
 
     public async findAllLogsQuery( 
         query:{  
-            userId:string, 
-            projectId?:string, 
-            deploymentId?:string, 
-            page?:number, 
-            limit?:number, 
-            orderBy?:string
+            userId: string,
+            projectId: string,
+            deploymentId: string,
+            where: string,
+            orderBy: string,
+            limit: number,
+            skip: number  
         }
     ){
-
-        let limit = query.limit ?? 200;
-        let page = query.page ?? 1;
-        let skip = (page-1)*limit;
-
-        const allowedOrderBy = [ "event_time"];
-        const orderBy = allowedOrderBy.includes( query.orderBy || "") ? query.orderBy : "event_time";
-
-        const conditions = [`user_id={userId:UUID}`]
-
-        if( query.projectId){
-            conditions.push(`project_id={projectId:UUID}`);
-        }
-
-        if( query.deploymentId){
-            conditions.push(`deployment_id={deploymentId:UUID}`);
-        }
-
-        const where = `WHERE ${conditions.join(" AND ")}`;
-
 
         // SETTINGS max_block_size = 1 , preferred_block_size_bytes=1
 
@@ -92,8 +73,8 @@ class ClickhouseDB{
             const res = await clickhouseClient.query({
                 query: `
                     SELECT * FROM log_events 
-                    ${where}
-                    ORDER BY ${orderBy}
+                    ${query.where}
+                    ORDER BY ${query.orderBy}
                     LIMIT {limit:UInt32} 
                     OFFSET {skip:UInt32} 
                     `,
@@ -101,8 +82,8 @@ class ClickhouseDB{
                     userId: query.userId,
                     projectId: query.projectId,
                     deploymentId: query.deploymentId,
-                    limit: limit,
-                    skip: skip
+                    limit: query.limit,
+                    skip: query.skip
                 },
                 format: `JSONEachRow`
             })

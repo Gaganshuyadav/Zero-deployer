@@ -1,5 +1,6 @@
 import * as z from "zod";
-import { DeploymentStatusEnum, ProjectType } from "../generated/prisma/enums.js";
+import { DeploymentStatusEnum,  LogLevelEnum,  ProjectType, SourceEnum } from "../generated/prisma/enums.js";
+import type { KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
 
 class AllValidators{
 
@@ -159,6 +160,78 @@ class AllValidators{
           error: "Deployment ID is required"
         })
         .min(1, "Deployment ID is required")
+      })
+    })
+
+
+    public insertBulkLogRows = z.object({
+      body: z.object({
+        rowsData: z.array(
+          z.object({
+
+            user_id: z.string({
+              error: "user_id is required",
+            }).min(1, "user_id cannot be empty"),
+
+            project_id: z.string({
+              error: "project_id is required",
+            }).min(1, "project_id cannot be empty"),
+
+            deployment_id: z.string({
+              error: "deployment_id is required",
+            }).min(1, "deployment_id cannot be empty"),
+
+            log_level: z.enum(
+              Object.values(LogLevelEnum),
+              {
+                message: "Invalid log_level",
+              }
+            ),
+
+            message: z.string().nullable(),
+
+            source: z.enum(
+              Object.values(SourceEnum),
+              {
+                message: "Invalid source",
+              }
+            ),
+
+            container_id: z.string().nullable(),
+
+            host: z.string().nullable(),
+
+            event_time: z.string({
+              error: "event_time must be a valid ISO string",
+            }).optional(),
+
+            event_id: z.string({
+              error: "event_id is required",
+            }).min(1, "event_id cannot be empty"),
+          })
+        )
+        .min(1, "rowData must contain at least one log event"),
+
+      }),
+    })
+
+    public findALLLogs = z.object({
+      body: z.object({
+          userId: z.string({
+              error: "userId is required",
+            }).min(1, "userId cannot be empty"), 
+
+          projectId: z.string({
+              error: "projectId is required",
+            }).min(1, "projectId cannot be empty"), 
+
+          deploymentId: z.string({
+              error: "deploymentId is required",
+            }).min(1, "deploymentId cannot be empty"), 
+
+          page: z.number().nullable(), 
+          limit: z.number().nullable(), 
+          orderBy: z.enum(["event_time"]).nullable()
       })
     })
 
