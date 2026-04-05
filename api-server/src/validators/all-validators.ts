@@ -197,9 +197,9 @@ class AllValidators{
               }
             ),
 
-            container_id: z.string().nullable(),
+            container_id: z.string().optional(),
 
-            host: z.string().nullable(),
+            host: z.string().optional(),
 
             event_time: z.string({
               error: "event_time must be a valid ISO string",
@@ -229,9 +229,9 @@ class AllValidators{
               error: "deploymentId is required",
             }).min(1, "deploymentId cannot be empty"), 
 
-          page: z.number().nullable(), 
-          limit: z.number().nullable(), 
-          orderBy: z.enum(["event_time"]).nullable()
+          page: z.number().optional(), 
+          limit: z.number().optional(), 
+          orderBy: z.enum(["event_time"]).optional()
       })
     })
 

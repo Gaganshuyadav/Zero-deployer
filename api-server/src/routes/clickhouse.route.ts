@@ -17,6 +17,7 @@ router.post(
 router.post(
     "/find-logs", 
     authenticate,
+    validate( allValidators.findALLLogs),
     clickhouseController.findAllLogs
 );
 
