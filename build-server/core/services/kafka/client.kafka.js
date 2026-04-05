@@ -2,8 +2,8 @@ const { Kafka} = require("kafkajs");
 
 //create kafka client
 const kafkaClient = new Kafka({
-    clientId: "my-first-kafka-app",
-    brokers: [ "192.168.1.39:9092"]
+    clientId: process.env.KAFKA_CLIENT_ID,
+    brokers: JSON.parse(process.env.KAFKA_BROKERS_LIST || "[]")
 })
 
 module.exports = { kafkaClient};

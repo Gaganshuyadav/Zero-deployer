@@ -1,4 +1,5 @@
 const { incrementCounter } = require("../../custom_funcs/counter");
+const { strictEnvs } = require("../../utils/envChecker");
 const { kafkaProducer } = require("./kafka.producer");
 const os = require("os");
 
@@ -10,7 +11,7 @@ exports.produceLogs = async ( logString, logLevel) =>{
 
         await kafkaProducer( 
             { 
-                topic: "build-container-logs", 
+                topic: process.env.KAFKA_BUILD_TOPIC, 
                 partition: 0, 
                 key: String(incrementCounter()), 
                 message: 

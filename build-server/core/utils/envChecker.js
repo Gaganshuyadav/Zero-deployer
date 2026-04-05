@@ -13,7 +13,10 @@ const strictEnvs = {
         AWS_SECRET_MANAGER_SECRET_NAME: process.env.AWS_SECRET_MANAGER_SECRET_NAME,
         SERVER_USER_ID: process.env.SERVER_USER_ID,
         SERVER_PROJECT_ID: process.env.SERVER_PROJECT_ID,
-        SERVER_DEPLOYMENT_ID: process.env.SERVER_DEPLOYMENT_ID
+        SERVER_DEPLOYMENT_ID: process.env.SERVER_DEPLOYMENT_ID,
+        KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
+        KAFKA_BROKERS_LIST: process.env.KAFKA_BROKERS_LIST,
+        KAFKA_BUILD_TOPIC: process.env.KAFKA_BUILD_TOPIC
 };
 
 const optionalEnv = {
