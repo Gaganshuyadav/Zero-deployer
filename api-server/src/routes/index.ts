@@ -6,6 +6,7 @@ import team from "./team.route.js";
 import project from "./project.route.js";
 import deployment from "./deployment.route.js";
 import clickhouse from "./clickhouse.route.js";
+import serverSideEvents from "./sse.route.js";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use("/team", team);
 router.use("/project", project);
 router.use("/deployment", deployment);
 router.use("/clickhouse", clickhouse);
+router.use("/z-sse", serverSideEvents);
 
 
 export default router;
