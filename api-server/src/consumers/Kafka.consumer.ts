@@ -1,7 +1,7 @@
 import type { EachBatchHandler, EachMessageHandler, ConsumerRunConfig } from "kafkajs";
 import { kafkaClient } from "../config/client.kafka.js";
 import { processBatch } from "../services/kafkaService.js";
-import { shutdownState } from "../states/shutdownState.js";
+import { shutdownState } from "../states-manager/shutdownState.js";
 import { strictEnvs } from "../config/envConfig.js";
 
 

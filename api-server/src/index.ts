@@ -2,16 +2,13 @@ import { initConfig, optionalEnv, strictEnvs } from './config/envConfig.js';
 initConfig();
 import express from  'express';
 import cors from "cors";
-import { generateRandomId } from './utils/generate-functions.js';
 import { sqsService } from './aws/sqsService.js';
 import { consumerClient, kafkaConsumer } from './consumers/Kafka.consumer.js';
 import { shutdownSignals } from './constants/shutdownSignals.js';
-import { shutdownState } from './states/shutdownState.js';
+import { shutdownState } from './states-manager/shutdownState.js';
 import router from './routes/index.js';
 import { errorMiddleware } from './middleware/error.js';
-import { clickHouseService } from './services/clickhouse.service.js';
-import { clickhouseDB } from './DB/clickHouse.db.js';
-
+import { SSE_Clients } from './states-manager/sse.manager.deployment.js';
 
 const start = async () => {
 
