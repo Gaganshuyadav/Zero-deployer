@@ -9,6 +9,8 @@ import { shutdownState } from './states-manager/shutdownState.js';
 import router from './routes/index.js';
 import { errorMiddleware } from './middleware/error.js';
 import { SSE_Clients } from './states-manager/sse.manager.deployment.js';
+import { redisConfig } from './config/redisClient.js';
+import { startRedisSubscriber } from './services/redis.service.js';
 
 const start = async () => {
 
@@ -25,6 +27,8 @@ const start = async () => {
   //run kafka consumer
   optionalEnv.IS_KAFKA_EXIST!=='1' ? console.log("kafka Consumer run in local") : kafkaConsumer({ topics: [ strictEnvs.KAFKA_BUILD_TOPIC as string]});
   const port = Number(strictEnvs.PORT) || 3020;
+  // start redis subscriber
+  redisConfig.redisEnabled && startRedisSubscriber();
   
 // Graceful Shutdown Process
 shutdownSignals.forEach(signal => {

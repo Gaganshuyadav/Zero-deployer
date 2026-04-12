@@ -3,6 +3,7 @@ import type { Request, Response} from "express";
 import { sseService } from "../services/sseService.js";
 import { MyErrorHandler } from "../middleware/error.js";
 import { SSE_Clients } from "../states-manager/sse.manager.deployment.js";
+import { redisClient } from "../config/redisClient.js";
 
 
 class ServerSideEvents{
@@ -44,7 +45,12 @@ class ServerSideEvents{
 
     public createLog = catchAsyncErrors( async( req:Request, res:Response)=>{
 
-        sseService.sendLogsToUser( "1111", { logs:"i am ironman"});
+        try{
+            await redisClient?.publish("sse-publish-logs", JSON.stringify({ data: "Tony Stark is Coming", "deploymentId":"1111" } ) );
+        }
+        catch(err){
+            console.log("Redis Publisher not able to publish data");
+        }
 
         return res.json({
             error: false,

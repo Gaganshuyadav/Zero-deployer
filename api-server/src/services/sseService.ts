@@ -30,7 +30,7 @@ class SSE_Service{
         return true;
     }
     
-    public sendLogsToUser( deploymentId:string, logData:any){
+    public async sendLogsToUser( deploymentId:string, logData:any){
     
         const deploymentResponse = SSE_Clients.get( deploymentId);
     

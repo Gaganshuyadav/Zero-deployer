@@ -2,6 +2,7 @@ import pRetry from "p-retry"
 import type { ClickHouseLogEvent, findAllLogsQuerySchema, KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js"
 import { strictEnvs } from "../config/envConfig.js";
 import { clickhouseDB } from "../DB/clickHouse.db.js";
+import { redisClient } from "../config/redisClient.js";
 
 
 class ClickHouseService{
@@ -15,7 +16,7 @@ class ClickHouseService{
 
         // Use pRetry to do exponential backoff on transient errors
         await pRetry(
-            ()=>{
+            async ()=>{
     
                 // The client.insert supports piping a string, we send JSONEachRow.
                 // for extreme performance, consider streaming.
@@ -26,6 +27,13 @@ class ClickHouseService{
                 })
 
                 clickhouseDB.insertMultipleRows(chunkRows)
+                
+                try{
+                    await redisClient?.publish("sse-publish-logs", JSON.stringify({ data: "Tony Stark is Coming" } ) );
+                }
+                catch(err){
+                    console.log("Redis Publisher not able to publish data");
+                }
             },
             {
                 // delay = minTimeout * factor^(retries - 1)
