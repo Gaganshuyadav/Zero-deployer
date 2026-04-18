@@ -51,6 +51,7 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             container_id: parsed?.container_id || null,
             host: parsed?.host ? parsed?.host : os.hostname(),
             event_time: parsed?.created_at ? new Date(parsed?.created_at).toISOString() : new Date().toISOString(),   
+            lastEventid: parsed?.lastEventId,
             kafka_offset: String(message.offset),
             kafka_partition: batch?.partition
         }

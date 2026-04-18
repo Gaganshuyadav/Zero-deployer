@@ -3,6 +3,7 @@ import type { ClickHouseLogEvent, findAllLogsQuerySchema, KafkaMessageRawLogEven
 import { strictEnvs } from "../config/envConfig.js";
 import { clickhouseDB } from "../DB/clickHouse.db.js";
 import { redisClient } from "../config/redisClient.js";
+import type { PublisherLogPayload, PublishEventPayload } from "../types/interfaces/redis_types.js";
 
 
 class ClickHouseService{
@@ -22,14 +23,21 @@ class ClickHouseService{
                 // for extreme performance, consider streaming.
 
                 // convert event_time based on clickhose
+
+                const logPublisherPayload:Array<PublisherLogPayload> = [];
+
                 chunkRows = chunkRows.map( chunk=>{
+                    logPublisherPayload.push( { deployment_id: chunk?.deployment_id as string, lastEventId: chunk?.lastEventId, logData: chunk?.message as string})
                     return { ...chunk, ...{ event_time: (new Date(chunk.event_time as string).toISOString()).replace("Z","") } }
                 })
 
-                clickhouseDB.insertMultipleRows(chunkRows)
                 
                 try{
-                    await redisClient?.publish("sse-publish-logs", JSON.stringify({ data: "Tony Stark is Coming" } ) );
+                    const res = await clickhouseDB.insertMultipleRows(chunkRows)
+                    if( res){
+                        await redisClient?.publish("sse-publish-logs", JSON.stringify({ multiple: true, payload: logPublisherPayload} as PublishEventPayload ) );
+                    }
+                    
                 }
                 catch(err){
                     console.log("Redis Publisher not able to publish data");

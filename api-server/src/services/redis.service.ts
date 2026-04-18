@@ -1,5 +1,6 @@
 import { redisSub } from "../config/redisClient.js";
 import type { KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
+import type { PublisherLogPayload, PublishEventPayload } from "../types/interfaces/redis_types.js";
 import { sseService } from "./sseService.js";
 
 let isRedisSubscriberStarted = false;
@@ -13,14 +14,30 @@ async function startRedisSubscriber() {
 
     const ss = await redisSub?.psubscribe("sse-publish-logs");
 
-    redisSub?.on("pmessage", ( pattern, channel, message)=>{
+    redisSub?.on("pmessage", ( pattern, channel, message:string)=>{
 
-        const messageData:KafkaMessageRawLogEvent = JSON.parse(message || "");
+        const messageData:PublishEventPayload = JSON.parse(message || "");
         console.log(":::::::: ", messageData);
 
-        if(!messageData?.deployment_id) return; 
+        if ( Array.isArray(messageData) && messageData.multiple) {
 
-        sseService. sendLogsToUser( messageData.deployment_id, messageData.message);
+          for (const chunk of messageData.payload) {
+
+            sseService.sendLogsToUser(
+              chunk.deployment_id,
+              chunk
+            );
+          }
+        } else if( messageData.multiple===false && messageData.payload?.deployment_id) {
+
+          sseService.sendLogsToUser(
+            messageData.payload?.deployment_id,
+            messageData.payload
+          );
+          
+        }
+
+
         
     })
 
