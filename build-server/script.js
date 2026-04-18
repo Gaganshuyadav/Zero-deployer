@@ -7,6 +7,7 @@ const { initConfig_with_envChecking } = require("./core/utils/envChecker");
 const { getAllFilesPathFromFolder } = require("./core/custom_funcs/getAllFilesPath");
 const { uploadAllFilesToS3 } = require("./core/custom_funcs/uploadAllBuildFilesToS3");
 const { produceLogs } = require("./core/services/kafka/Kafka_Log_Service");
+const { eventCounter } = require("./core/custom_funcs/lastEventId-state-counter");
 
 
 const BuiidRepo = async ()=>{
@@ -29,7 +30,7 @@ const BuiidRepo = async ()=>{
 
     const clone = exec(`git clone ${github_repository_url} ${folderPathForRepoClone}`);
 
-    await produceLogs("cloning.....","INFO");
+    await produceLogs("cloning.....","INFO", eventCounter.eventIncrement());
 
     clone.on("close", async ()=>{
 
@@ -46,18 +47,18 @@ const BuiidRepo = async ()=>{
             const hasBuildScript = pkg.scripts && pkg.scripts.build;
 
             if(hasBuildScript){
-                await produceLogs("contains build script","INFO");
+                await produceLogs("contains build script","INFO", eventCounter.eventIncrement());
 
-                await produceLogs("npm install ...","INFO");
+                await produceLogs("npm install ...","INFO", eventCounter.eventIncrement());
                 const node_modules_install = exec(`npm install --prefix ${targetPath}`);
 
                 node_modules_install.stdout.on("data", async ( data)=>{
-                    await produceLogs(data,"INFO");
+                    await produceLogs(data,"INFO", eventCounter.eventIncrement());
                 })
 
                 node_modules_install.on("close",async ()=>{
 
-                    await produceLogs("Build start... ","INFO");
+                    await produceLogs("Build start... ","INFO", eventCounter.eventIncrement());
 
                     // change homepage path , to serve builds
                     pkg.homepage = "./";
@@ -67,18 +68,18 @@ const BuiidRepo = async ()=>{
                     const makeBuild = exec(`npm run build --prefix ${targetPath}`);
 
                     makeBuild.stdout.on("data", async ( data)=>{
-                        await produceLogs( data, "INFO");
+                        await produceLogs( data, "INFO", eventCounter.eventIncrement());
                     })
 
                     makeBuild.on("close", async ()=>{
 
-                        await produceLogs("build successful","INFO");
+                        await produceLogs("build successful","INFO", eventCounter.eventIncrement());
 
-                        await produceLogs("Starting Upload Files to S3...","INFO");
+                        await produceLogs("Starting Upload Files to S3...","INFO", eventCounter.eventIncrement());
                         const allFilesPathsFromBuildFolder = getAllFilesPathFromFolder( `${targetPath}build`, true);
                         await uploadAllFilesToS3( allFilesPathsFromBuildFolder, repo_id, true);
-                        await produceLogs("All Build Files Uploaded Successfully","INFO");
-                        await produceLogs("Destroy Container","INFO");
+                        await produceLogs("All Build Files Uploaded Successfully","INFO", eventCounter.eventIncrement());
+                        await produceLogs("Destroy Container","INFO", eventCounter.eventIncrement());
                         process.exit(0);
                     })
 
@@ -86,18 +87,18 @@ const BuiidRepo = async ()=>{
 
             }
             else{
-                await produceLogs("contains package.json but missing `build` script","ERROR");
+                await produceLogs("contains package.json but missing `build` script","ERROR", eventCounter.eventIncrement());
                 return new Error("contains package.json but missing `build` script");
             }
         }
         //simple html,css,js files
         else{
-                await produceLogs("Starting Upload Files to S3...","INFO");
+                await produceLogs("Starting Upload Files to S3...","INFO", eventCounter.eventIncrement());
                 const allFilesPathsFromFolder = getAllFilesPathFromFolder( `${targetPath}`, false);
                 await uploadAllFilesToS3( allFilesPathsFromFolder, repo_id, false);
-                await produceLogs("All Files Uploaded Successfully","INFO");
+                await produceLogs("All Files Uploaded Successfully","INFO", eventCounter.eventIncrement());
                 
-                await produceLogs("Destroy Container","INFO");
+                await produceLogs("Destroy Container","INFO", eventCounter.eventIncrement());
                 process.exit(0);
         }
 

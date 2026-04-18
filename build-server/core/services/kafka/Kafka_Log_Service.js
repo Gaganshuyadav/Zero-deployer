@@ -4,7 +4,7 @@ const { kafkaProducer } = require("./kafka.producer");
 const os = require("os");
 
 
-exports.produceLogs = async ( logString, logLevel) =>{
+exports.produceLogs = async ( logString, logLevel, lastEventId) =>{
     console.log(logString);
 
     if( process.env.IS_KAFKA_EXIST==="1"){
@@ -24,7 +24,8 @@ exports.produceLogs = async ( logString, logLevel) =>{
                     source: "BUILD",
                     container_id: `container_id_${Math.floor(Math.random()*10000000)}`,
                     host: os.hostname() ? os.hostname() : "",
-                    created_at: new Date()
+                    created_at: new Date(),
+                    lastEventId: lastEventId
                 }
             }
         );
