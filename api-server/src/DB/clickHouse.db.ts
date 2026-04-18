@@ -38,6 +38,8 @@ class ClickhouseDB{
                     
                         event_time     DateTime64(3, 'UTC') DEFAULT now64(3),
                         event_id       UUID
+
+                        last_event_id  UInt32
                     )
                     ENGINE = MergeTree
                     PARTITION BY toYYYYMM(event_time)
@@ -117,7 +119,7 @@ class ClickhouseDB{
         }
     }
 
-    public async insertMultipleRows( rows:Array<ClickHouseLogEvent>){
+    public async insertMultipleRows( rows:Array<KafkaMessageRawLogEvent | ClickHouseLogEvent>){
 
         console.log(rows)
 
