@@ -34,7 +34,10 @@ class SSE_Service{
     
         const deploymentResponse = SSE_Clients.get( deploymentId);
     
-        if(!deploymentResponse) return;
+        if(!deploymentResponse){
+            console.log("Deployment Id Response not Exist: ",deploymentId);
+            return;
+        }
     
         const payload = `data: ${JSON.stringify(logData)}\n\n`;
 
