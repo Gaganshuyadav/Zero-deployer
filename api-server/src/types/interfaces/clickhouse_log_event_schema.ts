@@ -9,7 +9,8 @@ interface ClickHouseLogEvent{
     container_id: string | null
     host: string
     event_time?: string // ISO 8601
-    event_id?: string
+    event_id?: string,
+    lastEventId: number // for SSE
 }
 
 
