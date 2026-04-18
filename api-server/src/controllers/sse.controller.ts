@@ -26,7 +26,7 @@ class ServerSideEvents{
 
         // heartbeat ( keep connection alive)
         const heartBeat = setInterval( ()=>{
-            res.write(": ping\n\n");
+            res.write(`: ping: ${deploymentId}\n\n`);
         }, 15000);
 
         
@@ -45,17 +45,21 @@ class ServerSideEvents{
 
     public createLog = catchAsyncErrors( async( req:Request, res:Response)=>{
 
+        const { deploymentId, messageBody} = req.body;
+
         try{
-            await redisClient?.publish("sse-publish-logs", JSON.stringify({ data: "Tony Stark is Coming", "deploymentId":"1111" } ) );
+            await redisClient?.publish("sse-publish-logs", JSON.stringify({ data: messageBody, "deploymentId": deploymentId } ) );
+
+            return res.json({
+                error: false,
+                message: "Log Send Successfully"
+            })
         }
         catch(err){
             console.log("Redis Publisher not able to publish data");
+            throw new MyErrorHandler( "Not Able to Send Logs", 500);
         }
 
-        return res.json({
-            error: false,
-            message: "Log Send Successfully"
-        })
 
     })
 
