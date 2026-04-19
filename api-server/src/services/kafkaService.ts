@@ -6,8 +6,6 @@ import { clickHouseService } from "./clickhouse.service.js";
 import type { ClickHouseLogEvent, KafkaMessageRawLogEvent } from "../types/interfaces/clickhouse_log_event_schema.js";
 import { kafkaTopicPartitionFormatKey } from "../utils/string-format-functions.js";
 
-
-
 // track consecutive failures per topic-partition
 const failureCountsMap = new Map();
 
@@ -51,7 +49,7 @@ async function processBatch( { batch, resolveOffset, heartbeat, commitOffsetsIfN
             container_id: parsed?.container_id || null,
             host: parsed?.host ? parsed?.host : os.hostname(),
             event_time: parsed?.created_at ? new Date(parsed?.created_at).toISOString() : new Date().toISOString(),   
-            lastEventid: parsed?.lastEventId,
+            lastEventId: parsed?.lastEventId,
             kafka_offset: String(message.offset),
             kafka_partition: batch?.partition
         }

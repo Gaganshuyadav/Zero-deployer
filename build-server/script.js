@@ -25,6 +25,13 @@ const BuiidRepo = async ()=>{
     const github_repository_url = process.env.GITHUB_REPOSITORY_URL;
     const repo_id = process.env.REPO_ID || `${(Math.floor(Math.random()*10000))}`;
 
+    // setInterval(async ()=>{
+    //     await produceLogs("Clone it ","INFO", eventCounter.eventIncrement());
+    // }, 3000);
+
+
+    // /*
+
     const folderPathForRepoClone = path.join(__dirname,`./cloned-repo/${repo_id}`); 
     const repoName = github_repository_url.split("/")[github_repository_url.split("/").length-1].toString().split(".")[0];
 
@@ -103,6 +110,8 @@ const BuiidRepo = async ()=>{
         }
 
     })
+
+    // */
 
 
     

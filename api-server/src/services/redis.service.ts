@@ -19,7 +19,7 @@ async function startRedisSubscriber() {
         const messageData:PublishEventPayload = JSON.parse(message || "");
         console.log(":::::::: ", messageData);
 
-        if ( Array.isArray(messageData) && messageData.multiple) {
+        if ( Array.isArray(messageData?.payload) && messageData.multiple) {
 
           for (const chunk of messageData.payload) {
 
@@ -34,7 +34,7 @@ async function startRedisSubscriber() {
             messageData.payload?.deployment_id,
             messageData.payload
           );
-          
+
         }
 
 

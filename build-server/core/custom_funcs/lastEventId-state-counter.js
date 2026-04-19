@@ -14,4 +14,4 @@ class EventCounter{
 
 const eventCounter = new EventCounter();
 
-export { eventCounter};
+module.exports = { eventCounter};
